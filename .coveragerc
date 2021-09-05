@@ -1,0 +1,3 @@
+[run]
+source = src/ssh_cert_service
+omit = tests/
