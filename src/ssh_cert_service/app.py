@@ -18,6 +18,7 @@ def create_app(config=None) -> Flask:
     ###################################################
     app = Flask("ssh_cert_service")
     app.config["VERSION"] = version
+    app.config["DEBUG"] = True
 
     ###################################################
     # custom json encoder

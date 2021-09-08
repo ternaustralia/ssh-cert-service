@@ -69,3 +69,19 @@ paths:
           schema:
             type: string
             example: "dave"
+  /token:
+    get:
+      summary: Generate ssh-key token
+      description: Generates ssh-keys private and public keys.
+      responses:
+        "200":
+          description: getting response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  public_key:
+                    type: string
+                  private_key:
+                    type: string
