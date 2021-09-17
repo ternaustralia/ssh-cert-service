@@ -85,3 +85,5 @@ paths:
                     type: string
                   private_key:
                     type: string
+                  cert_key:
+                    type: string

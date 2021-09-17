@@ -1,47 +1,43 @@
-from elasticsearch import RequestError
+from flask import jsonify
 from flask_tern import openapi
-from flask import abort, jsonify, request
-from cryptography.fernet import Fernet
-
-from cryptography.hazmat.primitives import serialization as crypto_serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.backends import default_backend as crypto_default_backend
-
+from flask_tern.auth import current_user
 
 from .blueprint import bp
+from ssh_cert_service.utils.ssh_keygen import SSHKeygen
+
 
 @bp.route("/token")
 @openapi.validate()
-def token_get():
+def get_token():
     """
-    Generate a ssh key public and private, save the key in auth know host and return the keys, public and private
-
     :return: object public-key and private-key
     :rtype: json
     """
-    key = rsa.generate_private_key(
-        backend=crypto_default_backend(),
-        public_exponent=65537,
-        key_size=2048
-    )
 
-    private_key = key.private_bytes(
-        crypto_serialization.Encoding.PEM,
-        crypto_serialization.PrivateFormat.PKCS8,
-        crypto_serialization.NoEncryption())
+    principals = current_user['coesra_uname']
+    ssh = SSHKeygen()
+    identity = 'COESRA'
+    comments = 'COESRA'
 
-    public_key = key.public_key().public_bytes(
-        crypto_serialization.Encoding.OpenSSH,
-        crypto_serialization.PublicFormat.OpenSSH
-    )
+    private_key, public_key, cert_key = ssh.gen_key(
+        comments,
+        '',
+        identity,
+        'coesra.com.au',
+        '-1:+12w',
+        principals
+    ) 
+
+    ssh.verify_signature(public_key.decode(), cert_key.decode())
     
     return jsonify({
-        'public_key': public_key.decode("utf-8"),
-        'private_key': private_key.decode("utf-8"),
+        'public_key': public_key.decode(),
+        'private_key': private_key.decode(("utf-8")),
+        'cert_key': cert_key.decode(),
     })
 
 
-@bp.route("/token/login", methods=["POST"])
+@bp.route("/token/signing", methods=["POST"])
 @openapi.validate()
 def token_login_post():
     """
@@ -51,3 +47,4 @@ def token_login_post():
     :rtype: json
     """
     pass
+
