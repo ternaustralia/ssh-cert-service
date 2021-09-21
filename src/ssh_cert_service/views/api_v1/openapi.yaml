@@ -37,38 +37,6 @@ security:
   - ApiKeyAuth: []
 
 paths:
-  /example:
-    get:
-      summary: Generate greeting
-      description: Generates a greeting message.
-      responses:
-        "200":
-          description: greeting response
-          content:
-            application/json:
-              schema:
-                type: object
-  /example/{name}:
-    post:
-      summary: Generate greeting
-      description: Generates a greeting message.
-      responses:
-        "200":
-          description: greeting response
-          content:
-            application/json:
-              schema:
-                type: object
-        "403":
-          description: Forbidden
-      parameters:
-        - name: name
-          in: path
-          description: Name of the person to greet.
-          required: true
-          schema:
-            type: string
-            example: "dave"
   /token:
     get:
       summary: Generate ssh-key token
@@ -87,3 +55,30 @@ paths:
                     type: string
                   cert_key:
                     type: string
+        "403":
+          description: Forbidden
+  /token/signing:
+    post:
+      summary: Verify key signatures
+      description: Verify that public key was used to sing the cert key.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object   
+              example:
+                public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXm2eU/HPGMqJQ3JyNbmA6RC0jIBvZogsmezo8NPqMKMlDw1ntJU1TYxjgS/oXkt86Z1j+UO98vttgTXKxIcCLUyHuvmBzl4UANX5HhX4+83CItFlBa2RBS54rg8+a2RnBNT3mMmLnGoSArFlV4gNbzcXXr70SaoIaEDx/JqcwVF+TE0479tbKWg8sJolQWkLWWaap1k2luSDIAaA7JdRr9zmKq3usBa70QxcyD7br0QVHI1y4iXd32a0oIUWrGE3ireF0/Jv/bjdC9HAHRKgWe8dd65kTxD15XY7MnOjztuT/I8mwg/8oUicdu58cawSVvkVtexGf/fWKI/uyQZwm11XiMOWn/7pxlVpRapos+DRG7gL4m8mE7cCdvciVPufxF1IcbgHMecrQqXngUXwcIfuYz3URBIfj3bmOXiA0eoITrXssCWAElk3khuyJShZR1ClUELZWVbRjQHb+Xj+F9axMDPSYvEccO72ur7dl+vfhCAZ6NZVJSwM+VRpMel0= COESRA\n"
+                cert_key: "ssh-rsa-cert-v01@openssh.com AAAAHHNzaC1yc2EtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgrGhR8IL41GV/xfKULCOjZWPKs2VdTT9rLXYliabBPhwAAAADAQABAAABgQDXm2eU/HPGMqJQ3JyNbmA6RC0jIBvZogsmezo8NPqMKMlDw1ntJU1TYxjgS/oXkt86Z1j+UO98vttgTXKxIcCLUyHuvmBzl4UANX5HhX4+83CItFlBa2RBS54rg8+a2RnBNT3mMmLnGoSArFlV4gNbzcXXr70SaoIaEDx/JqcwVF+TE0479tbKWg8sJolQWkLWWaap1k2luSDIAaA7JdRr9zmKq3usBa70QxcyD7br0QVHI1y4iXd32a0oIUWrGE3ireF0/Jv/bjdC9HAHRKgWe8dd65kTxD15XY7MnOjztuT/I8mwg/8oUicdu58cawSVvkVtexGf/fWKI/uyQZwm11XiMOWn/7pxlVpRapos+DRG7gL4m8mE7cCdvciVPufxF1IcbgHMecrQqXngUXwcIfuYz3URBIfj3bmOXiA0eoITrXssCWAElk3khuyJShZR1ClUELZWVbRjQHb+Xj+F9axMDPSYvEccO72ur7dl+vfhCAZ6NZVJSwM+VRpMel0AAAAAAAAAAAAAAAIAAAAGQ09FU1JBAAAADQAAAAlqZWZlcnNzb24AAAAAYUlCIwAAAABhuAAkAAAAAAAAAAAAAAAAAAABlwAAAAdzc2gtcnNhAAAAAwEAAQAAAYEA15tnlPxzxjKiUNycjW5gOkQtIyAb2aILJns6PDT6jCjJQ8NZ7SVNU2MY4Ev6F5LfOmdY/lDvfL7bYE1ysSHAi1Mh7r5gc5eFADV+R4V+PvNwiLRZQWtkQUueK4PPmtkZwTU95jJi5xqEgKxZVeIDW83F16+9EmqCGhA8fyanMFRfkxNOO/bWyloPLCaJUFpC1lmmqdZNpbkgyAGgOyXUa/c5iqt7rAWu9EMXMg+269EFRyNcuIl3d9mtKCFFqxhN4q3hdPyb/243QvRwB0SoFnvHXeuZE8Q9eV2OzJzo87bk/yPJsIP/KFInHbufHGsElb5FbXsRn/31iiP7skGcJtdV4jDlp/+6cZVaUWqaLPg0Ru4C+JvJhO3Anb3IlT7n8RdSHG4BzHnK0Kl54FF8HCH7mM91EQSH4925jl4gNHqCE617LAlgBJZN5IbsiUoWUdQpVBC2VlW0Y0B2/l4/hfWsTAz0mLxHHDu9rq+3Zfr34QgGejWVSUsDPlUaTHpdAAABlAAAAAxyc2Etc2hhMi01MTIAAAGAvj0Ujr181dZLhnaRXimLf5fXVYd+Zvz36I1Gqopk1TcZwDpEj+SJUBT7EWyNNQEGgyiGCMeXaRNJ5spieRYe/X36XhrZwPc/XXwliFt6IHb6oP95sOO2/usIOOkED0iQANxa20BMAIZI+zlSwuWM8Iv2b218I1Ny6ALV3HbIy5gBLXU5zxRKiJ1Hsa+424sQaXtAmRcFdtOs6ezHNu9HNSR0ndcFIHBNXUGYTb5bumvYKM2INmDMT2byxp1H27ck9JTb4+qkjkCAMqMg/XBGqxgsqjynRE8nZr95kw8UfHbw7N6aHpZFNUmK5UQmryipAeIeExpPJDIxaYDUlOMozcYg3ZZ8Zk4ZcFElYvU7hzZH2GNmZzlHAXvdIQNv2GQ7cMZv0tZdPdbmo37Xk4NHOlSqI1w9T9IPwrAfB6gfXNIjM+5aitDQ1C07qD+ztwt7KRLAXE1Coxt5m/q4UuHKrO23xMNzTT0t6TxdmO9Pdh4qrUWHSX35i7jRWiEzXb3G COESRA\n"
+      responses:
+        "200":
+          description: greeting response
+          content:
+            application/json:
+              schema:
+                type: object
+        "403":
+          description: Forbidden
+        "400":
+          description: Bad request
+        "500":
+          description: Internal Server Error

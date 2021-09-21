@@ -152,7 +152,6 @@ class SSHKeygen:
             if os.path.exists(tmp_public.name):
                 public_output = subprocess.run(f'ssh-keygen -l -f {tmp_public.name}', shell=True, capture_output=True)
                 pattern_public = f'(sha256\:.+)\s{self.comment}'
-                print(public_output.stdout.decode())
                 p_result = re.search(pattern_public, public_output.stdout.decode(), re.IGNORECASE)
                 public_match = p_result.groups(0)[0] if p_result else None
                 
@@ -192,9 +191,9 @@ class SSHKeygen:
             result = re.search(valid, cert, re.IGNORECASE)
             cert_data['valid'] = result.groups(0)[0] if result else None
 
-            # principals = 'principals\:(.*+)'
-            # result = re.search(principals, cert, re.IGNORECASE)
-            # cert_data['principals'] = result.groups(0) if result else None
+            principals = 'principals\:[^\n]+\s+([a-z-_]+(?:\n\s+))+'
+            result = re.search(principals, cert, re.IGNORECASE)
+            cert_data['principals'] = result.groups() if result else tuple()
 
             cert_data['critical'] = None 
 
