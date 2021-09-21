@@ -19,8 +19,7 @@ def get_token():
     :rtype: json
     """
 
-    # principals = current_user['coesra_uname']
-    principals = 'jefersson'
+    principals = current_user['coesra_uname']
     ssh = SSHKeygen(COMMENTS)
     identity = 'COESRA'
 
@@ -71,7 +70,7 @@ def token_login_post():
             pass
 
     print(cert_data.get('principals'))
-    if not is_valid or 'jefersson' not in cert_data.get('principals'):
+    if not is_valid or current_user['coesra_uname'] not in cert_data.get('principals'):
         return jsonify({
             'message': 'Error!, You do not have access to it, please verify you certificate or public key',
             'code': 403

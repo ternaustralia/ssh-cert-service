@@ -36,10 +36,10 @@ RUN pip install --no-cache-dir \
 COPY requirements.txt /workspace/requirements.txt
 RUN pip install -r /workspace/requirements.txt
 
-# COPY source code into container
-# COPY dist/ /workspace/dist/
-# # Install pkg
-# RUN pip install --no-cache-dir /workspace/dist/*.whl
+COPY source code into container
+COPY dist/ /workspace/dist/
+# Install pkg
+RUN pip install --no-cache-dir /workspace/dist/*.whl
 
 
 
@@ -72,14 +72,7 @@ COPY build-files/docker_entrypoint.sh /docker_entrypoint.sh
 ENV FLASK_APP=ssh_cert_service \
   FLASK_ENV=production
 
-WORKDIR /ssh_cert_service  
-COPY . . 
-
-RUN apk add --no-cache git 
-
-# USER 1000
-RUN pip3 install -r requirements.txt 
-
+USER 1000
 
 # TODO: setup ENTRYPOINT if needed and default CMD
 ENTRYPOINT ["/docker_entrypoint.sh"]
