@@ -19,7 +19,8 @@ def get_token():
     :rtype: json
     """
 
-    principals = current_user['coesra_uname']
+    # principals = current_user['coesra_uname']
+    principals = 'jefersson'
     ssh = SSHKeygen(COMMENTS)
     identity = 'COESRA'
 
@@ -51,26 +52,22 @@ def token_login_post():
     cert_key = data.get('cert_key')
     public_key = data.get('public_key')
 
+
     if not public_key or not cert_key:
         raise Exception('The public and certificate keys cannot be empty')
 
     ssh = SSHKeygen(COMMENTS)
-    cert_data = ssh.get_certificate_data(cert_key)
-    is_valid = ssh.verify_signature(public_key.encode(), cert_key.encode())
+    cert_data = ssh.get_certificate_data(cert_key.encode('utf-8'))
+    is_valid = ssh.verify_signature(public_key.encode('utf-8'), cert_key.encode('utf-8'))
 
     # Check if the certificated has expired yet.
     validity = cert_data.get('valid')
     if validity:
-        str_expired = validity[validity.rfind(' ')+2:] 
-        print(str_expired)
-        try:
-         date_expired = datetime.strptime(str_expired, '%Y-%m-%dT%H:%M:%S')
-         is_valid = datetime.now() <= date_expired 
-        except:
-            pass
-
-    print(cert_data.get('principals'))
-    if not is_valid or current_user['coesra_uname'] not in cert_data.get('principals'):
+        str_expired = validity[validity.rfind(' ')+1:] 
+        date_expired = datetime.strptime(str_expired, '%Y-%m-%dT%H:%M:%S')
+        is_valid = datetime.now() <= date_expired 
+            
+    if not is_valid or 'jefersson' not in [x.strip() for x in cert_data.get('principals')] :
         return jsonify({
             'message': 'Error!, You do not have access to it, please verify you certificate or public key',
             'code': 403

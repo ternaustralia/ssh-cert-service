@@ -3,7 +3,7 @@ import tempfile
 import subprocess
 from pathlib import Path
 
-from ssh_keygen import SSHKeygen
+from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 
 
 class TestSshKeyGen(unittest.TestCase):
@@ -109,8 +109,10 @@ class TestSshKeyGen(unittest.TestCase):
             subprocess.run(f'ssh-keygen -t rsa -C "{self.COMMENT}" -N "{self.PASSPHRASE}" -f {keys_path}', shell=True, capture_output=True)
             # Sign key
             ssh.sign_key(keys_path, f'{keys_path}.pub', self.INDENTITY, self.DOMAIN, self.VALIDITY, self.PRINCIPALS)
-            cert_output = subprocess.run(f'ssh-keygen -L -f {keys_path}-cert.pub', shell=True, capture_output=True)
+            # Read files into binary variables
+            private_key, public_key, cert_key = ssh.load_keys(keys_path)
             # Delete tmp directory
 
-        cert = ssh.get_certificate_data(cert_output.stdout.decode())
+        cert = ssh.get_certificate_data(cert_key)
         self.assertIsInstance(cert, dict)
+        self.assertIsNotNone(cert.get('signing_ca'))
