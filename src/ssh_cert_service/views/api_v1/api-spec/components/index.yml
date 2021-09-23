@@ -1,0 +1,2 @@
+securitySchemes:
+  $ref: ./security_schemes/index.yml

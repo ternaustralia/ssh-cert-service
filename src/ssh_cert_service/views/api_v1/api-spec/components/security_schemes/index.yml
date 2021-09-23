@@ -1,0 +1,19 @@
+BasicAuth:
+  type: http
+  scheme: basic
+BearerAuth:
+  type: http
+  scheme: bearer
+OpenID:
+  type: openIdConnect
+  # TODO: template this url
+  openIdConnectUrl: https://auth-test.tern.org.au/auth/realms/local/.well-known/openid-configuration
+# TODO: could also define api key via custom header, cookie or url parameter
+ApiKeyAuth:
+  type: apiKey
+  # TODO: openapi-core validates against hard coded scheme
+  # scheme: apikey-v1
+  # TODO: could also just use BasicAuth auth scheme for apiKey?? -> need to parse basic auth header accordingly to see whether it's user:pw or apikey
+  in: header # can be "header", "query" or "cookie"
+  name: Authorization
+  

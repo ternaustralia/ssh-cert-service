@@ -1,0 +1,5 @@
+description: OK
+headers:
+  Access-Control-Allow-Origin:
+    schema:
+      type: "string"
