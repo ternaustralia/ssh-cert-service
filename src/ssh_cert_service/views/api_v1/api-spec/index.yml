@@ -1,0 +1,11 @@
+openapi: 3.0.1
+info:
+  $ref: ./info/index.yml
+components:
+  $ref: ./components/index.yml
+security:
+  $ref: ./security/index.yml
+tags:
+  $ref: ./tags/index.yml
+paths:
+  $ref: ./paths/index.yml

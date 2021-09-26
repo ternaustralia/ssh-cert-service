@@ -1,0 +1,7 @@
+/token:
+  $ref: ./token/index.yml
+
+/token/signing:
+  $ref: ./token/signing.yml
+
+

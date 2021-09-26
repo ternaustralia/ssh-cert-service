@@ -36,7 +36,7 @@ RUN pip install --no-cache-dir \
 COPY requirements.txt /workspace/requirements.txt
 RUN pip install -r /workspace/requirements.txt
 
-# COPY source code into container
+COPY source code into container
 COPY dist/ /workspace/dist/
 # Install pkg
 RUN pip install --no-cache-dir /workspace/dist/*.whl

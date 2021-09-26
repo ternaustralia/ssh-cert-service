@@ -45,6 +45,13 @@ You may want to adapt settings in .flaskenv
     # coverage report
     pytest --cov --cov-report=html
 
+Build API structure run the following command. Please make sure to install json-refs
+
+.. code:: bash 
+    cd src/ssh_cert_service/views/api_v1/api-spec
+    bash build.sh
+
+
 
 The same can be done within a docker environment. The following is a simple example using alpine.
 

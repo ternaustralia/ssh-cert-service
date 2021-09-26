@@ -1,0 +1,5 @@
+- BasicAuth: []
+- BearerAuth: []
+# colud define list of scopes here
+- OpenID: []
+- ApiKeyAuth: []
