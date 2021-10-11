@@ -11,7 +11,7 @@ from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 
 COMMENTS = 'COESRA'
 
-@bp.route("/token")
+@bp.route("/token", methods=["POST"])
 @openapi.validate()
 def get_token():
     """
@@ -19,8 +19,7 @@ def get_token():
     :rtype: json
     """
 
-    # principals = current_user['coesra_uname']
-    principals = 'jefersson'
+    principals = current_user['coesra_uname']
     ssh = SSHKeygen(COMMENTS)
     identity = 'COESRA'
 
@@ -33,9 +32,9 @@ def get_token():
     ) 
     
     return jsonify({
-        'public_key': public_key.decode("utf-8"),
-        'private_key': private_key.decode("utf-8"),
-        'cert_key': cert_key.decode("utf-8"),
+        'public_key': public_key,
+        'private_key': private_key,
+        'cert_key': cert_key
     })
 
 
@@ -67,7 +66,7 @@ def token_login_post():
         date_expired = datetime.strptime(str_expired, '%Y-%m-%dT%H:%M:%S')
         is_valid = datetime.now() <= date_expired 
             
-    if not is_valid or 'jefersson' not in [x.strip() for x in cert_data.get('principals')] :
+    if not is_valid or current_user['coesra_uname'] not in [x.strip() for x in cert_data.get('principals')] :
         return jsonify({
             'message': 'Error!, You do not have access to it, please verify you certificate or public key',
             'code': 403

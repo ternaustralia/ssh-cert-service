@@ -1,7 +1,7 @@
 options:
   $ref: ./../../config/methods/options.yml
 
-get:
+post:
   summary: Generate ssh-key token
   description: Generates ssh-keys private and public keys.
   responses:
@@ -22,5 +22,11 @@ get:
                 type: string
               cert_key:
                 type: string
+    '400':
+      $ref: ./../../components/responses/forbidden.yml
     '401':
       $ref: ./../../components/responses/unauthorized.yml
+    '403':
+      $ref: ./../../components/responses/bad_request.yml
+    '500':
+      $ref: ./../../components/responses/internal_error.yml

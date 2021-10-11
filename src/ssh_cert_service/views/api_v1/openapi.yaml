@@ -49,7 +49,7 @@ paths:
               schema:
                 title: Empty Schema
                 type: object
-    get:
+    post:
       summary: Generate ssh-key token
       description: Generates ssh-keys private and public keys.
       responses:
@@ -70,8 +70,14 @@ paths:
                     type: string
                   cert_key:
                     type: string
+        '400':
+          description: Forbidden
         '401':
           description: Unauthorized
+        '403':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
   /token/signing:
     options:
       summary: Request options
