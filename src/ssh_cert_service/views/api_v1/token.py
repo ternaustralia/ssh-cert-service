@@ -11,6 +11,7 @@ COMMENTS = "COESRA"
 
 
 @bp.route("/token", methods=["POST"])
+@require_user
 @openapi.validate()
 def get_token():
     """
@@ -28,6 +29,7 @@ def get_token():
 
 
 @bp.route("/token/signing", methods=["POST"])
+@require_user
 @openapi.validate(True, False)
 def token_login_post():
     """
