@@ -44,8 +44,8 @@ def token_login_post():
         raise Exception("The public and certificate keys cannot be empty")
 
     ssh = SSHKeygen(COMMENTS)
-    cert_data = ssh.get_certificate_data(cert_key.encode("utf-8"))
-    is_valid = ssh.verify_signature(public_key.encode("utf-8"), cert_key.encode("utf-8"))
+    cert_data = ssh.get_certificate_data(cert_key)
+    is_valid = ssh.verify_signature(public_key, cert_key)
 
     # Check if the certificated has expired yet.
     validity = cert_data.get("valid")

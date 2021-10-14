@@ -130,7 +130,7 @@ class SSHKeygen:
 
         subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    def verify_signature(self, public: bytes, cert: bytes) -> bool:
+    def verify_signature(self, public: str, cert: str) -> bool:
         """Read public key and signed key to verified signature
         Parameters
         ----------
@@ -148,7 +148,7 @@ class SSHKeygen:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
-            tmp_public = open(f"{keys_path}.pub", "w+b")
+            tmp_public = open(f"{keys_path}.pub", "w")
             tmp_public.write(public)
             tmp_public.close()
 
@@ -161,7 +161,7 @@ class SSHKeygen:
         cert_data = self.get_certificate_data(cert)
         return cert_data.get("signing_ca") == public_match
 
-    def get_certificate_data(self, cert_key: bytes) -> Dict[str, Any]:
+    def get_certificate_data(self, cert_key: str) -> Dict[str, Any]:
         cert = ""
 
         if not cert_key:
@@ -169,7 +169,7 @@ class SSHKeygen:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
-            tmp_cert = open(f"{keys_path}-cert.pub", "w+b")
+            tmp_cert = open(f"{keys_path}-cert.pub", "w")
             tmp_cert.write(cert_key)
             tmp_cert.close()
 
