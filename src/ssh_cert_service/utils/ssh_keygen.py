@@ -68,12 +68,9 @@ class SSHKeygen:
         """
         file = Path(path)
 
-        with open(path, "rb") as f:
-            private = f.read()
-        with open(f"{path}.pub", "rb") as f:
-            public = f.read()
-        with open(f"{path}-cert.pub", "rb") as f:
-            cert = f.read()
+        private = open(path, "r").read()
+        public = open(f"{path}.pub", "r").read()
+        cert = open(f"{path}-cert.pub", "r").read()
 
         return private, public, cert
 
