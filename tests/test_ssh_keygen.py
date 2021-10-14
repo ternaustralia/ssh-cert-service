@@ -23,9 +23,9 @@ class TestSshKeyGen(unittest.TestCase):
             self.PASSPHRASE, self.INDENTITY, self.DOMAIN, self.VALIDITY, self.PRINCIPALS
         )
 
-        self.assertIsInstance(private_key, bytes)
-        self.assertIsInstance(public_key, bytes)
-        self.assertIsInstance(cert_key, bytes)
+        self.assertIsInstance(private_key, str)
+        self.assertIsInstance(public_key, str)
+        self.assertIsInstance(cert_key, str)
 
     def test_sing_key(self):
         """Signing certificate"""
@@ -48,7 +48,7 @@ class TestSshKeyGen(unittest.TestCase):
             private_key, public_key, cert_key = ssh.load_keys(keys_path)
             # Delete tmp directory
 
-        self.assertIsInstance(cert_key, bytes)
+        self.assertIsInstance(cert_key, str)
 
     def test_load_keys(self):
         """Load ssh_keys from a file"""
@@ -74,9 +74,9 @@ class TestSshKeyGen(unittest.TestCase):
         self.assertFalse(Path(dir).exists())
         # Check if keys where loaded
         private_key, public_key, cert_key = loaded_keys
-        self.assertIsInstance(private_key, bytes)
-        self.assertIsInstance(public_key, bytes)
-        self.assertIsInstance(cert_key, bytes)
+        self.assertIsInstance(private_key, str)
+        self.assertIsInstance(public_key, str)
+        self.assertIsInstance(cert_key, str)
 
     def test_verify_signature(self):
         """Veify the signature of the cert with the public key"""
