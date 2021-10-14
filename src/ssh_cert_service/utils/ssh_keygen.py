@@ -45,8 +45,7 @@ class SSHKeygen:
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
             # Genarate private and public key
             subprocess.run(
-                f'ssh-keygen -t rsa -C "{self.comment}" -N "{passphrase}" -f {keys_path}',
-                shell=True,
+                ("ssh-keygen", "-t", "rsa", "-C", self.comment, "-N", passphrase, "-f", keys_path),
                 capture_output=True,
             )
             # Sign key
@@ -109,21 +108,27 @@ class SSHKeygen:
         if not private_path or not public_path:
             raise Exception("Public or private key cannot be empty")
 
+        cmd = ["ssh-keygen", "-s", private_path, "-h"]
+
         if identity:
-            identity = f"-I {identity}"
+            cmd.append("-I")
+            cmd.append(identity)
         else:
-            identity = f'-I ""'
+            cmd.append("-I")
+            cmd.append("")
 
         if domain:
-            domain = f"-Z {domain}"
+            cmd.append("-Z")
+            cmd.append(domain)
         if validity:
-            validity = f"-V {validity}"
+            cmd.append("-V")
+            cmd.append(validity)
         if principals:
-            principals = f"-n {principals}"
+            cmd.append("-n")
+            cmd.append(principals)
+        cmd.append(public_path)
 
-        subprocess.run(
-            f"ssh-keygen -s {private_path} {identity} -h {domain} {validity} {principals} {public_path}", shell=True
-        )
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def verify_signature(self, public: bytes, cert: bytes) -> bool:
         """Read public key and signed key to verified signature
@@ -148,7 +153,7 @@ class SSHKeygen:
             tmp_public.close()
 
             if os.path.exists(tmp_public.name):
-                public_output = subprocess.run(f"ssh-keygen -l -f {tmp_public.name}", shell=True, capture_output=True)
+                public_output = subprocess.run(("ssh-keygen", "-l", "-f", tmp_public.name), capture_output=True)
                 pattern_public = f"(sha256\:.+)\s{self.comment}"
                 p_result = re.search(pattern_public, public_output.stdout.decode(), re.IGNORECASE)
                 public_match = p_result.groups(0)[0] if p_result else None
@@ -169,7 +174,7 @@ class SSHKeygen:
             tmp_cert.close()
 
             if os.path.exists(tmp_cert.name):
-                cert_output = subprocess.run(f"ssh-keygen -L -f {tmp_cert.name}", shell=True, capture_output=True)
+                cert_output = subprocess.run(("ssh-keygen", "-L", "-f", tmp_cert.name), capture_output=True)
                 cert = cert_output.stdout.decode()
 
         if not cert:
