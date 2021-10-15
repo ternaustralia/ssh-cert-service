@@ -66,11 +66,13 @@ class SSHKeygen:
         ----------
         tuple
         """
-        file = Path(path)
 
-        private = open(path, "r").read()
-        public = open(f"{path}.pub", "r").read()
-        cert = open(f"{path}-cert.pub", "r").read()
+        with open(path, "r") as f:
+            private = f.read()
+        with open(f"{path}.pub", "r") as f:
+            public = f.read()
+        with open(f"{path}-cert.pub", "r") as f:
+            cert = f.read()
 
         return private, public, cert
 
@@ -179,31 +181,31 @@ class SSHKeygen:
 
         cert_data = dict()
 
-        data_type = "Type\:\s(.+@.+)\shost\scertificate"
+        data_type = "Type\\:\\s(.+@.+)\\shost\\scertificate"
         result = re.search(data_type, cert, re.IGNORECASE)
         cert_data["type"] = result.groups(0)[0] if result else None
 
-        public_key = "public\skey\:\srsa-cert\s(.+)"
+        public_key = "public\\skey\\:\\srsa-cert\\s(\\S+)"
         result = re.search(public_key, cert, re.IGNORECASE)
         cert_data["public_key"] = result.groups(0)[0] if result else None
 
-        signing_ca = "signing\sca\:\sRSA\s(.+)\s\(using\srsa-sha2-512\)"
+        signing_ca = "signing\\sca\:\\sRSA\\s(\\S+)"
         result = re.search(signing_ca, cert, re.IGNORECASE)
         cert_data["signing_ca"] = result.groups(0)[0] if result else None
 
-        key_id = 'key\sid\:\s"([a-z]+)"'
+        key_id = 'key\\sid\\:\\s"([a-z]+)"'
         result = re.search(key_id, cert, re.IGNORECASE)
         cert_data["key_id"] = result.groups(0)[0] if result else None
 
-        serial = "serial\:\s(\d+)"
+        serial = "serial\\:\\s(\\d+)"
         result = re.search(serial, cert, re.IGNORECASE)
         cert_data["serial"] = result.groups(0)[0] if result else None
 
-        valid = "valid\:\s(from\s[0-9t\:-]+\sto\s[0-9t\:-]+)"
+        valid = "valid\\:\\s(from\\s[0-9t\\:-]+\\sto\\s[0-9t\\:-]+)"
         result = re.search(valid, cert, re.IGNORECASE)
         cert_data["valid"] = result.groups(0)[0] if result else None
 
-        principals = "principals\:[^\n]+\s+([a-z-_]+(?:\n\s+))+"
+        principals = "principals\\:[^\\n]+\\s+([a-z-_]+(?:\\n\\s+))+"
         result = re.search(principals, cert, re.IGNORECASE)
         cert_data["principals"] = result.groups() if result else tuple()
 

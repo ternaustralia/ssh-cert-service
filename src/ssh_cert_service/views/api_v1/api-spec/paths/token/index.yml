@@ -1,16 +1,9 @@
-options:
-  $ref: ./../../config/methods/options.yml
-
 post:
   summary: Generate ssh-key token
   description: Generates ssh-keys private and public keys.
   responses:
     '200':
       description: OK
-      headers:
-        Access-Control-Allow-Origin:
-          schema:
-            type: "string"
       content:
         application/json:
           schema:

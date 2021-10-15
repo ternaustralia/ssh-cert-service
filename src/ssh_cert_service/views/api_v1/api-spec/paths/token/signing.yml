@@ -1,6 +1,3 @@
-options:
-  $ref: ./../../config/methods/options.yml
-
 post:
   summary: Verify key signatures
   description: Verify that public key was used to sing the cert key.
