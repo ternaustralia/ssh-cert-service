@@ -38,8 +38,7 @@ class TestSshKeyGen(unittest.TestCase):
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
             # Genarate private and public key
             subprocess.run(
-                f'ssh-keygen -t rsa -C "{self.COMMENT}" -N "{self.PASSPHRASE}" -f {keys_path}',
-                shell=True,
+                ("ssh-keygen", "-t", "rsa", "-C", self.COMMENT, "-N", self.PASSPHRASE, "-f", keys_path),
                 capture_output=True,
             )
             # Sign key
@@ -59,8 +58,7 @@ class TestSshKeyGen(unittest.TestCase):
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
             # Genarate private and public key
             subprocess.run(
-                f'ssh-keygen -t rsa -C "{self.COMMENT}" -N "{self.PASSPHRASE}" -f {keys_path}',
-                shell=True,
+                ("ssh-keygen", "-t", "rsa", "-C", self.COMMENT, "-N", self.PASSPHRASE, "-f", keys_path),
                 capture_output=True,
             )
             # Sign key
@@ -89,8 +87,7 @@ class TestSshKeyGen(unittest.TestCase):
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
             # Genarate private and public key
             subprocess.run(
-                f'ssh-keygen -t rsa -C "{self.COMMENT}" -N "{self.PASSPHRASE}" -f {keys_path}',
-                shell=True,
+                ("ssh-keygen", "-t", "rsa", "-C", self.COMMENT, "-N", self.PASSPHRASE, "-f", keys_path),
                 capture_output=True,
             )
             # Sign key
@@ -114,8 +111,7 @@ class TestSshKeyGen(unittest.TestCase):
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
             # Genarate private and public key
             subprocess.run(
-                f'ssh-keygen -t rsa -C "{self.COMMENT}" -N "{self.PASSPHRASE}" -f {keys_path}',
-                shell=True,
+                ("ssh-keygen", "-t", "rsa", "-C", self.COMMENT, "-N", self.PASSPHRASE, "-f", keys_path),
                 capture_output=True,
             )
             # Sign key
