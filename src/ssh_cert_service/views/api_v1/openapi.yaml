@@ -1,8 +1,8 @@
-openapi: "3.0.1"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: 'ssh-cert-service'
-  description: 'SSH key signing service'
+  version: 1.0.0
+  title: ssh-cert-service
+  description: SSH key signing service
   contact:
     email: tern@uq.com.au
 components:
@@ -83,3 +83,4 @@ paths:
           description: Bad Request
         '500':
           description: Internal Server Error
+

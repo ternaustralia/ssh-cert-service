@@ -1,5 +1,5 @@
 version: "1.0.0"
-title: ${title}
-description: ${description}
+title: "ssh-cert-service"
+description: "SSH key signing service"
 contact:
   email: tern@uq.com.au
