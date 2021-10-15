@@ -21,3 +21,24 @@ def test_sign(client, basic_auth):
         headers={"Authorization": basic_auth["user"]["auth"]},
     )
     assert response.status_code == 200
+
+
+def test_sign_existing(client, basic_auth):
+    # generate a key pair
+    from ssh_cert_service.utils.ssh_keygen import SSHKeygen
+
+    ssh = SSHKeygen(basic_auth["user"]["email"])
+    pub_key, priv_key, cert_key = ssh.gen_key()
+
+    response = client.post(
+        "/api/v1.0/token/sign",
+        json={
+            "public_key": pub_key,
+        },
+        headers={"Authorization": basic_auth["user"]["auth"]},
+    )
+    assert response.status_code == 200
+    cert_key = response.json["cert_key"]
+    assert ssh.verify_signature(pub_key, cert_key)
+    cert_data = ssh.get_certificate_data(cert_key)
+    assert basic_auth["user"]["coesra_uname"] in cert_data.principals
