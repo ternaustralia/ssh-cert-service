@@ -23,7 +23,7 @@ def get_token():
     ssh = SSHKeygen(COMMENTS)
     identity = "COESRA"
 
-    private_key, public_key, cert_key = ssh.gen_key("", identity, "coesra.com.au", "-1:+12w", principals)
+    private_key, public_key, cert_key = ssh.gen_key("", identity, "coesra.com.au", "-1:+1d", principals)
 
     return jsonify({"public_key": public_key, "private_key": private_key, "cert_key": cert_key})
 
