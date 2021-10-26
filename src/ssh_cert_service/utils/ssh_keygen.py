@@ -53,10 +53,8 @@ class SSHKeygen:
                 ("ssh-keygen", "-t", "rsa", "-C", self.comment, "-N", passphrase, "-f", keys_path),
                 capture_output=True,
             )
+            
             # Sign key
-            print('MASTER_PRIVATE_KEY_PATH')
-            print(MASTER_PRIVATE_KEY_PATH)
-
             self.sign_key(MASTER_PRIVATE_KEY_PATH, f"{keys_path}.pub", identity, domain, validity, principals)
             # Read files into binary variables
             loaded_keys = self.load_keys(keys_path)
