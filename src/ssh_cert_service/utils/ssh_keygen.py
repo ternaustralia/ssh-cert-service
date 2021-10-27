@@ -2,12 +2,15 @@ import os
 import re
 import subprocess
 import tempfile
-from pathlib import Path
-from typing import Any, Dict
 
+from typing import Any, Dict
+from ssh_cert_service.settings import MASTER_PRIVATE_KEY_PATH, MASTER_KEY_PASSPHRASE
+
+# app = Flask(__name__)
 
 class SSHKeygen:
     SSH_NAME = "python_key"
+
 
     def __init__(self, comment) -> None:
         """Instance variables
@@ -40,6 +43,9 @@ class SSHKeygen:
         tuple
         """
 
+        if not MASTER_PRIVATE_KEY_PATH:
+            raise Exception('Error!! The coesra_private key is required to be able to sign certificates, please check with the admin.')
+
         # Create temporary dicrectory and storage the keys there
         with tempfile.TemporaryDirectory() as tmp_dir:
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
@@ -48,8 +54,9 @@ class SSHKeygen:
                 ("ssh-keygen", "-t", "rsa", "-C", self.comment, "-N", passphrase, "-f", keys_path),
                 capture_output=True,
             )
+            
             # Sign key
-            self.sign_key(keys_path, f"{keys_path}.pub", identity, domain, validity, principals)
+            self.sign_key(MASTER_PRIVATE_KEY_PATH, f"{keys_path}.pub", identity, domain, validity, principals)
             # Read files into binary variables
             loaded_keys = self.load_keys(keys_path)
             # Delete tmp directory
@@ -82,7 +89,7 @@ class SSHKeygen:
         public_path: str,
         identity: str = "",
         domain: str = "",
-        validity: str = "-1d:+3w",
+        validity: str = "-1d:+1d",
         principals: str = "",
     ):
         """Generate signed certificate
@@ -107,7 +114,7 @@ class SSHKeygen:
         if not private_path or not public_path:
             raise Exception("Public or private key cannot be empty")
 
-        cmd = ["ssh-keygen", "-s", private_path, "-h"]
+        cmd = ["ssh-keygen", "-s", private_path, "-P", MASTER_KEY_PASSPHRASE]
 
         if identity:
             cmd.append("-I")

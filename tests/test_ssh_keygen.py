@@ -27,7 +27,7 @@ class TestSshKeyGen(unittest.TestCase):
         self.assertIsInstance(public_key, str)
         self.assertIsInstance(cert_key, str)
 
-    def test_sing_key(self):
+    def test_sign_key(self):
         """Signing certificate"""
         ssh = SSHKeygen(self.COMMENT)
         # Create temporary dicrectory and storage the keys there
@@ -77,7 +77,7 @@ class TestSshKeyGen(unittest.TestCase):
         self.assertIsInstance(cert_key, str)
 
     def test_verify_signature(self):
-        """Veify the signature of the cert with the public key"""
+        """ Veify the signature of the cert with the public key """
         ssh = SSHKeygen(self.COMMENT)
         # Create temporary dicrectory and storage the keys there
         with tempfile.TemporaryDirectory() as tmp_dir:
