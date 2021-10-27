@@ -9,8 +9,8 @@ from flask import current_app
 
 class SSHKeygen:
     SSH_NAME = "python_key"
-    MASTER_PRIVATE_KEY_PATH = current_app.config.get("MASTER_PRIVATE_KEY_PATH_ENV")
-    MASTER_KEY_PASSPHRASE = current_app.config.get("MASTER_KEY_PASSPHRASE_ENV")
+    MASTER_PRIVATE_KEY_PATH = current_app.config.get("MASTER_PRIVATE_KEY_PATH")
+    MASTER_KEY_PASSPHRASE = current_app.config.get("MASTER_KEY_PASSPHRASE")
 
 
     def __init__(self, comment) -> None:
