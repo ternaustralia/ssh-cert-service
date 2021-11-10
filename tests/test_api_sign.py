@@ -23,11 +23,11 @@ def test_sign(client, basic_auth):
     assert response.status_code == 200
 
 
-def test_sign_existing(client, basic_auth):
+def test_sign_existing(client, basic_auth, ca_key, ca_pass):
     # generate a key pair
     from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 
-    ssh = SSHKeygen(basic_auth["user"]["email"])
+    ssh = SSHKeygen(ca_key, ca_pass)
     pub_key, priv_key, cert_key = ssh.gen_key()
 
     response = client.post(
