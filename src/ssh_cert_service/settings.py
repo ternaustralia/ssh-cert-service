@@ -3,8 +3,9 @@
 # This file is read before all other configuration sources
 #
 
-import os
+# import os
 
-# get path from the masterkey is located 
-MASTER_PRIVATE_KEY_PATH = os.environ["COESRA_PRIVATE_KEY_PATH_ENV"] 
-MASTER_KEY_PASSPHRASE = os.environ.get("MASTER_KEY_PASSPHRASE_ENV", "") 
+# get path from the masterkey is located
+# TODO: either fail if not set (and valid) ... or generate a new one on the fly
+# USER_CA_KEY = os.environ["USER_CA_KEY"]
+# USER_CA_KEY_PASS = os.environ.get("USER_CA_KEY_PASS", "")
