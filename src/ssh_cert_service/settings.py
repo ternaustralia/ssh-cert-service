@@ -3,9 +3,11 @@
 # This file is read before all other configuration sources
 #
 
-# import os
-
-# get path from the masterkey is located
-# TODO: either fail if not set (and valid) ... or generate a new one on the fly
-# USER_CA_KEY = os.environ["USER_CA_KEY"]
-# USER_CA_KEY_PASS = os.environ.get("USER_CA_KEY_PASS", "")
+# Set some defaults
+# When deployed, these values must be configured
+USER_CA_NAME = "SSH CA"
+# TODO: when the app starts up, it should probably verify these settings, and fail fast
+#       without CA_KEY, and CA_PASS the app is useless
+# USER_CA_KEY = None
+# USER_CA_PASS = None
+SSH_PRINCIPAL_CLAIM = "preferred_username"

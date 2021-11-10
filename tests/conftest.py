@@ -8,15 +8,13 @@ from ssh_cert_service import create_app
 
 @pytest.fixture
 def ca_key():
-    """Return path to SSH CA key.
-    """
+    """Return path to SSH CA key."""
     return str(Path(__file__).with_name("test_user_ca.key"))
 
 
 @pytest.fixture
 def ca_pass():
-    """Return password for SSH CA key.
-    """
+    """Return password for SSH CA key."""
     return "test"
 
 
@@ -27,8 +25,10 @@ def app(ca_key, ca_pass):
             "TESTING": True,
             "OIDC_DISCOVERY_URL": "https://auth.example.com/.well-known/openid-configuration",
             "OIDC_CLIENT_ID": "oidc-test",
+            "USER_CA_NAME": "COESRA",
             "USER_CA_KEY": ca_key,
             "USER_CA_KEY_PASS": ca_pass,
+            "SSH_PRINCIPAL_CLAIM": "coesra_uname",
         }
     )
     yield app
