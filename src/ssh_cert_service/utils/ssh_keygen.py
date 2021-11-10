@@ -2,61 +2,73 @@ import os
 import re
 import subprocess
 import tempfile
-
 from typing import Any, Dict
-from ssh_cert_service.settings import MASTER_PRIVATE_KEY_PATH, MASTER_KEY_PASSPHRASE
 
-# app = Flask(__name__)
 
 class SSHKeygen:
     SSH_NAME = "python_key"
 
-
-    def __init__(self, comment) -> None:
+    def __init__(self, ca_key: str, ca_pass: str) -> None:
         """Instance variables
+
+        ca_key: string
+            path to ca private key
+
+        ca_pass: string
+            passphrase for ca private key
 
         comment : string
             Comment for the private key to be generated
         """
-        self.comment = comment
+        self.ca_key = ca_key
+        self.ca_pass = ca_pass
 
     def gen_key(
-        self, passphrase: str = "", identity: str = "", domain: str = "", validity: str = "", principals: str = ""
+        self,
+        passphrase: str = "",
+        identity: str = "",
+        domain: str = "",
+        validity: str = "",
+        principals: str = "",
+        comment: str = "",
     ) -> tuple:
         """Generate a SSH Key
         Parameters
         ----------
-        comment : string
-            Comment for the private key to be generated
         passphrase : string
-            password that will be added to the public key
+            password that will be used to encrypt private key
         indentity : string
-            String the helps to identified the signed key
+            String that helps to identify the signed key
         domain : string
-            String that will be allowed the signed key
+            Key will be restricted to be used for this host only
         validity : string
-            Expiration time for the signed key format -1d:+3w
+            Expiration time for the signed key format -1d:+3w (before, after)
         principals : string
             The user principals that will be allowed the signed key
+        comment : string
+            Comment for the private key to be generated
         Returns
         ----------
         tuple
         """
 
-        if not MASTER_PRIVATE_KEY_PATH:
-            raise Exception('Error!! The coesra_private key is required to be able to sign certificates, please check with the admin.')
+        if not self.ca_key:
+            raise Exception(
+                "Error!! The ca_private key is required to be able to sign certificates, please check with the admin."
+            )
 
         # Create temporary dicrectory and storage the keys there
         with tempfile.TemporaryDirectory() as tmp_dir:
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
             # Genarate private and public key
             subprocess.run(
-                ("ssh-keygen", "-t", "rsa", "-C", self.comment, "-N", passphrase, "-f", keys_path),
+                ("ssh-keygen", "-t", "rsa", "-C", comment, "-N", passphrase, "-f", keys_path),
                 capture_output=True,
+                check=True,
             )
-            
+
             # Sign key
-            self.sign_key(MASTER_PRIVATE_KEY_PATH, f"{keys_path}.pub", identity, domain, validity, principals)
+            self.sign_key(f"{keys_path}.pub", identity, domain, validity, principals)
             # Read files into binary variables
             loaded_keys = self.load_keys(keys_path)
             # Delete tmp directory
@@ -85,7 +97,6 @@ class SSHKeygen:
 
     def sign_key(
         self,
-        private_path: str,
         public_path: str,
         identity: str = "",
         domain: str = "",
@@ -95,26 +106,27 @@ class SSHKeygen:
         """Generate signed certificate
         Parameters
         ----------
-        private_path : string
-            Absoluted Path where the private key is located
-        public : string
-            Absoluted Path where the public key is located
+        public_path : string
+            Path to public key which needs to be signed
         indentity : string
-            String the helps to identified the signed key
+            String the helps to identify the signed key (this appears in sshd logs)
         domain : string
-            String that will be allowed the signed key
+            Host names this signed key will be allowed to log in to
         validity : string
-            Expiration time for the signed key format -1d:+3w
+            Expiration time for the signed key format -1d:+3w (before:after)
         principals : string
-            The user principals that will be allowed the signed key
+            The principals that will be assigned to this key
+
+        TODO: might be interesting to support for `-O` when signing ssh keys (e.g. agent/port/X11 forwarding, source-address-list etc....)
+
         Returns
         -------
         bool
         """
-        if not private_path or not public_path:
-            raise Exception("Public or private key cannot be empty")
+        if not public_path:
+            raise Exception("Public key cannot be empty")
 
-        cmd = ["ssh-keygen", "-s", private_path, "-P", MASTER_KEY_PASSPHRASE]
+        cmd = ["ssh-keygen", "-s", self.ca_key, "-P", self.ca_pass]
 
         if identity:
             cmd.append("-I")
@@ -134,38 +146,48 @@ class SSHKeygen:
             cmd.append(principals)
         cmd.append(public_path)
 
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     def verify_signature(self, public: str, cert: str) -> bool:
         """Read public key and signed key to verified signature
         Parameters
         ----------
         public : bytes
-           This is public generated previously
+           Public key to verify (must match the certificate)
         cert : bytes
-           This is the signature generated previously
+           Certificate to verify (must match public key and CA)
         Returns
         -------
         bool
         """
 
-        if not public or not cert:
+        if not (public and cert):
             raise Exception("The public and signature are required to verify the data")
 
         with tempfile.TemporaryDirectory() as tmp_dir:
+            # write pub key to file
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
-            tmp_public = open(f"{keys_path}.pub", "w")
+            public_path = f"{keys_path}.pub"
+            tmp_public = open(os.open(public_path, os.O_CREAT | os.O_WRONLY, mode=0o600), "w")
             tmp_public.write(public)
             tmp_public.close()
 
-            if os.path.exists(tmp_public.name):
-                public_output = subprocess.run(("ssh-keygen", "-l", "-f", tmp_public.name), capture_output=True)
-                pattern_public = f"(sha256\:.+)\s{self.comment}"
+            # get hash for public key
+            if os.path.exists(public_path):
+                public_output = subprocess.run(("ssh-keygen", "-l", "-f", public_path), capture_output=True)
+                # <size> <hash> <comment ...>
+                pattern_public = r"(\S+:\S+)"
                 p_result = re.search(pattern_public, public_output.stdout.decode(), re.IGNORECASE)
-                public_match = p_result.groups(0)[0] if p_result else None
+                public_match = p_result.group(1) if p_result else None
+            # get hash four our ca key
+            ca_output = subprocess.run(("ssh-keygen", "-l", "-f", self.ca_key), capture_output=True)
+            pattern_public = r"(\S+:\S+)"
+            p_result = re.search(pattern_public, ca_output.stdout.decode(), re.IGNORECASE)
+            ca_match = p_result.group(1) if p_result else None
 
         cert_data = self.get_certificate_data(cert)
-        return cert_data.get("signing_ca") == public_match
+        # The cert needs to match the public key and also our CA key
+        return cert_data.get("signing_ca") == ca_match and cert_data.get("public_key") == public_match
 
     def get_certificate_data(self, cert_key: str) -> Dict[str, Any]:
         cert = ""
@@ -175,12 +197,12 @@ class SSHKeygen:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             keys_path = f"{tmp_dir}/{self.SSH_NAME}"
-            tmp_cert = open(f"{keys_path}-cert.pub", "w")
+            cert_path = f"{keys_path}-cert.pub"
+            tmp_cert = open(os.open(cert_path, os.O_CREAT | os.O_WRONLY, mode=0o600), "w")
             tmp_cert.write(cert_key)
             tmp_cert.close()
-
-            if os.path.exists(tmp_cert.name):
-                cert_output = subprocess.run(("ssh-keygen", "-L", "-f", tmp_cert.name), capture_output=True)
+            if os.path.exists(cert_path):
+                cert_output = subprocess.run(("ssh-keygen", "-L", "-f", cert_path), capture_output=True, check=True)
                 cert = cert_output.stdout.decode()
 
         if not cert:
@@ -188,36 +210,45 @@ class SSHKeygen:
 
         cert_data = dict()
 
-        data_type = "Type\\:\\s(.+@.+)\\shost\\scertificate"
+        # Type: <key type> <user|host> certificate
+        data_type = r"Type: (.+) (.+) certificate"
         result = re.search(data_type, cert, re.IGNORECASE)
-        cert_data["type"] = result.groups(0)[0] if result else None
+        cert_data["type"] = result.group(1) if result else None
 
-        public_key = "public\\skey\\:\\srsa-cert\\s(\\S+)"
+        # Public key: <algo> <hash>
+        public_key = r"Public key: (.+) (.+)"
         result = re.search(public_key, cert, re.IGNORECASE)
-        cert_data["public_key"] = result.groups(0)[0] if result else None
+        cert_data["public_key"] = result.group(2) if result else None
 
-        signing_ca = "signing\\sca\:\\sRSA\\s(\\S+)"
+        # Signing CA: <algo> <hash>
+        signing_ca = r"Signing CA: (.+) (.+)"
         result = re.search(signing_ca, cert, re.IGNORECASE)
-        cert_data["signing_ca"] = result.groups(0)[0] if result else None
+        cert_data["signing_ca"] = result.group(2) if result else None
 
-        key_id = 'key\\sid\\:\\s"([a-z]+)"'
+        # Key ID: "<keyid>"
+        key_id = r'Key ID: "(.*)"'
         result = re.search(key_id, cert, re.IGNORECASE)
-        cert_data["key_id"] = result.groups(0)[0] if result else None
+        cert_data["key_id"] = result.group(1) if result else None
 
-        serial = "serial\\:\\s(\\d+)"
+        # Serial: <num>
+        serial = r"Serial: (\d+)"
         result = re.search(serial, cert, re.IGNORECASE)
-        cert_data["serial"] = result.groups(0)[0] if result else None
+        cert_data["serial"] = result.group(1) if result else None
 
-        valid = "valid\\:\\s(from\\s[0-9t\\:-]+\\sto\\s[0-9t\\:-]+)"
+        # Valid: from <iso8601> to <iso8601>
+        valid = r"Valid: (from [0-9T:-]+ to [0-9T:-]+)"
         result = re.search(valid, cert, re.IGNORECASE)
-        cert_data["valid"] = result.groups(0)[0] if result else None
+        cert_data["valid"] = result.group(1) if result else None
 
-        principals = "principals\\:[^\\n]+\\s+([a-z-_]+(?:\\n\\s+))+"
+        # Principals:
+        #         <principal 1>
+        #         .....
+        # FIXME: this currently matches only a single line
+        principals = r"Principals:[^\n]+\s+([a-z-_]+(?:\n\s+))+"
         result = re.search(principals, cert, re.IGNORECASE)
-        cert_data["principals"] = result.groups() if result else tuple()
+        cert_data["principals"] = result.group(1).strip() if result else tuple()
 
         cert_data["critical"] = None
 
         cert_data["extensions"] = None
-
         return cert_data
