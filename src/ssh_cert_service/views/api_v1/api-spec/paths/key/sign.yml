@@ -1,0 +1,30 @@
+post:
+  summary: Sign new CA  
+  description: Sign new CA with public_key privided.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object   
+          example:
+            public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXm2eU/HPGMqJQ3JyNbmA6RC0jIBvZogsmezo8NPqMKMlDw1ntJU1TYxjgS/oXkt86Z1j+UO98vttgTXKxIcCLUyHuvmBzl4UANX5HhX4+83CItFlBa2RBS54rg8+a2RnBNT3mMmLnGoSArFlV4gNbzcXXr70SaoIaEDx/JqcwVF+TE0479tbKWg8sJolQWkLWWaap1k2luSDIAaA7JdRr9zmKq3usBa70QxcyD7br0QVHI1y4iXd32a0oIUWrGE3ireF0/Jv/bjdC9HAHRKgWe8dd65kTxD15XY7MnOjztuT/I8mwg/8oUicdu58cawSVvkVtexGf/fWKI/uyQZwm11XiMOWn/7pxlVpRapos+DRG7gL4m8mE7cCdvciVPufxF1IcbgHMecrQqXngUXwcIfuYz3URBIfj3bmOXiA0eoITrXssCWAElk3khuyJShZR1ClUELZWVbRjQHb+Xj+F9axMDPSYvEccO72ur7dl+vfhCAZ6NZVJSwM+VRpMel0= COESRA\n"
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              public_key:
+                type: string
+              cert_key:
+                type: string
+    '400':
+      $ref: ./../../components/responses/forbidden.yml
+    '401':
+      $ref: ./../../components/responses/unauthorized.yml
+    '403':
+      $ref: ./../../components/responses/bad_request.yml
+    '500':
+      $ref: ./../../components/responses/internal_error.yml
