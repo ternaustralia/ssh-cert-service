@@ -1,7 +1,10 @@
-/token:
-  $ref: ./token/index.yml
+/key/generate:
+  $ref: ./key/index.yml
 
-/token/signing:
-  $ref: ./token/signing.yml
+/key/verify:
+  $ref: ./key/verify.yml
+
+/key/sign:
+  $ref: ./key/sign.yml
 
 

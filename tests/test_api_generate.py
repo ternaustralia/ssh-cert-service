@@ -1,13 +1,13 @@
-def test_token_no_auth(client):
+def test_key_no_auth(client):
     response = client.post(
-        "/api/v1.0/token",
+        "/api/v1.0/key/generate",
     )
     assert response.status_code == 403
 
 
-def test_token_gen(client, basic_auth):
+def test_key_gen(client, basic_auth):
     response = client.post(
-        "/api/v1.0/token",
+        "/api/v1.0/key/generate",
         headers={"Authorization": basic_auth["user"]["auth"]},
     )
     assert response.status_code == 200

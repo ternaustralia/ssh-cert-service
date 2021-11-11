@@ -1,19 +1,19 @@
 def test_sign_no_auth(client):
     response = client.post(
-        "/api/v1.0/token/signing",
+        "/api/v1.0/key/verify",
     )
     assert response.status_code == 403
 
 
-def test_sign(client, basic_auth):
+def test_verify(client, basic_auth):
     # generate a key pair
     response = client.post(
-        "/api/v1.0/token",
+        "/api/v1.0/key/generate",
         headers={"Authorization": basic_auth["user"]["auth"]},
     )
 
     response = client.post(
-        "/api/v1.0/token/signing",
+        "/api/v1.0/key/verify",
         json={
             "cert_key": response.json["cert_key"],
             "public_key": response.json["public_key"],
@@ -23,7 +23,7 @@ def test_sign(client, basic_auth):
     assert response.status_code == 200
 
 
-def test_sign_existing(client, basic_auth, ca_key, ca_pass):
+def test_sign(client, basic_auth, ca_key, ca_pass):
     # generate a key pair
     from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 
@@ -31,7 +31,7 @@ def test_sign_existing(client, basic_auth, ca_key, ca_pass):
     pub_key, priv_key, cert_key = ssh.gen_key()
 
     response = client.post(
-        "/api/v1.0/token/sign",
+        "/api/v1.0/key/sign",
         json={
             "public_key": pub_key,
         },
