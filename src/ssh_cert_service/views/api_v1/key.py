@@ -97,7 +97,7 @@ def verify_keys():
 @openapi.validate()
 def key_sign():
     """
-    sign new CA with the public key privided
+    Sign public key
 
     :return: object cert-key
     :rtype: json

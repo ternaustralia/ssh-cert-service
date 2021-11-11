@@ -1,6 +1,6 @@
 post:
-  summary: Sign new CA  
-  description: Sign new CA with public_key privided.
+  summary: Sign public key  
+  description: Sign public key.
   requestBody:
     content:
       application/json:
