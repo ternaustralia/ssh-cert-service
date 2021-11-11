@@ -86,8 +86,13 @@ class SSHKeygen:
         tuple
         """
 
-        with open(path, "r") as f:
-            private = f.read()
+        # Private key is necessary just when it generates new keys but it is not when needs just to sign CA
+        private = ""
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                private = f.read()
+
+        # Public and CA alway are required if there are not files it fails
         with open(f"{path}.pub", "r") as f:
             public = f.read()
         with open(f"{path}-cert.pub", "r") as f:
