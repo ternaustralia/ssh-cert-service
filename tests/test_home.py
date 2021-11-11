@@ -1,4 +1,5 @@
 import base64
+from dataclasses import asdict
 
 
 def test_root(client):
@@ -26,4 +27,4 @@ def test_whoami_ok(client, basic_auth):
         headers={"Authorization": basic_auth["user"]["auth"]},
     )
     assert response.status_code == 200
-    assert response.json == basic_auth["user"]
+    assert response.json == asdict(basic_auth["user"])
