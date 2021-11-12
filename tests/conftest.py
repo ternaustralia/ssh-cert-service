@@ -37,7 +37,7 @@ def app(ca_key, ca_pass):
 @pytest.fixture
 def basic_auth(base_auth):  # noqa
     for key, value in base_auth.items():
-        base_auth[key]["coesra_uname"] = value["name"]
+        base_auth[key].claims["coesra_uname"] = value["name"]
     return base_auth
 
 
