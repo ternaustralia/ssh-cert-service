@@ -21,7 +21,7 @@ def get_keys():
     :return: object public_key and private_key
     :rtype: json
     """
-    data = request.json
+    data = request.json if request.json else dict() 
 
     principals = current_user[current_app.config["SSH_PRINCIPAL_CLAIM"]]
     ssh = SSHKeygen(current_app.config["USER_CA_KEY"], current_app.config["USER_CA_KEY_PASS"])
@@ -104,7 +104,7 @@ def key_sign():
     """
 
     data = request.json
-    public_key = data.get("public_key")
+    public_key = data["public_key"]
 
     principals = current_user[current_app.config["SSH_PRINCIPAL_CLAIM"]]
     ssh = SSHKeygen(current_app.config["USER_CA_KEY"], current_app.config["USER_CA_KEY_PASS"])
