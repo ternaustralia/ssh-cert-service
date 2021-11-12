@@ -35,7 +35,7 @@ def get_keys():
     # domain ... should probably be a list of hosts ... who fills that in?
     domain = ""
     # TODO: validity ... should come from request and min/max should be enforced by server
-    validity = "-1:+1d"
+    validity = data.get("validity", "-1d:+1d")
 
     private_key, public_key, cert_key = ssh.gen_key(passphrase, identity, domain, validity, principals, comment)
 
@@ -53,18 +53,17 @@ def verify_keys():
     :rtype: json
     """
     data = request.json
-    public_key = data.get("public_key")
-    cert_key = data.get("cert_key")
+    public_cert_key = data.get("public_cert_key")
 
-    if not public_key:
+    if not public_cert_key:
         raise Exception("The public and certificate keys cannot be empty")
 
     ssh = SSHKeygen(current_app.config["USER_CA_KEY"], current_app.config["USER_CA_KEY_PASS"])
     # TODO: maybe change worklow here ?
     #       e.g. verify_signature could return None on failure or cert_data if successful?
     #            would avoid double parsing the cert
-    cert_data = ssh.get_certificate_data(cert_key)
-    is_valid = ssh.verify_signature(public_key, cert_key)
+    cert_data = ssh.get_certificate_data(public_cert_key)
+    is_valid = ssh.verify_signature(public_cert_key)
 
     # Check if the certificated has expired yet.
     validity = cert_data.get("valid")
@@ -114,7 +113,7 @@ def key_sign():
     # domain ... should probably be a list of hosts that are allowed to connect to the master node
     domain = ""
     # validity ... when it start : whent it will expired 
-    validity = data.get("validity", "-1:+1d")
+    validity = data.get("validity", "-1d:+1d")
 
     # Create temporary dicrectory and storage the keys there
     with tempfile.TemporaryDirectory() as tmp_dir:

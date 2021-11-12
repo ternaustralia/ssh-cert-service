@@ -153,7 +153,7 @@ class SSHKeygen:
 
         subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
-    def verify_signature(self, public: str, cert: str) -> bool:
+    def verify_signature(self, public: str) -> bool:
         """Read public key and signed key to verified signature
         Parameters
         ----------
@@ -166,33 +166,22 @@ class SSHKeygen:
         bool
         """
 
-        if not (public and cert):
+        if not public:
             raise Exception("The public and signature are required to verify the data")
 
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            # write pub key to file
-            keys_path = f"{tmp_dir}/{self.SSH_NAME}"
-            public_path = f"{keys_path}.pub"
-            tmp_public = open(os.open(public_path, os.O_CREAT | os.O_WRONLY, mode=0o600), "w")
-            tmp_public.write(public)
-            tmp_public.close()
+        # get hash four our ca key
+        ca_output = subprocess.run(("ssh-keygen", "-l", "-f", self.ca_key), capture_output=True)
+        pattern_public = r"(\S+:\S+)"
+        p_result = re.search(pattern_public, ca_output.stdout.decode(), re.IGNORECASE)
+        ca_match = p_result.group(1) if p_result else None
 
-            # get hash for public key
-            if os.path.exists(public_path):
-                public_output = subprocess.run(("ssh-keygen", "-l", "-f", public_path), capture_output=True)
-                # <size> <hash> <comment ...>
-                pattern_public = r"(\S+:\S+)"
-                p_result = re.search(pattern_public, public_output.stdout.decode(), re.IGNORECASE)
-                public_match = p_result.group(1) if p_result else None
-            # get hash four our ca key
-            ca_output = subprocess.run(("ssh-keygen", "-l", "-f", self.ca_key), capture_output=True)
-            pattern_public = r"(\S+:\S+)"
-            p_result = re.search(pattern_public, ca_output.stdout.decode(), re.IGNORECASE)
-            ca_match = p_result.group(1) if p_result else None
-
-        cert_data = self.get_certificate_data(cert)
+        cert_data = self.get_certificate_data(public)
         # The cert needs to match the public key and also our CA key
-        return cert_data.get("signing_ca") == ca_match and cert_data.get("public_key") == public_match
+        print("-----ouput-----")
+        print(cert_data)
+        print("----end-ouput----")
+        
+        return cert_data.get("signing_ca") == ca_match 
 
     def get_certificate_data(self, cert_key: str) -> Dict[str, Any]:
         cert = ""
@@ -221,14 +210,14 @@ class SSHKeygen:
         cert_data["type"] = result.group(1) if result else None
 
         # Public key: <algo> <hash>
-        public_key = r"Public key: (.+) (.+)"
+        public_key = r"public\skey:\srsa-cert\s(\S+)"
         result = re.search(public_key, cert, re.IGNORECASE)
-        cert_data["public_key"] = result.group(2) if result else None
+        cert_data["public_key"] = result.group(1) if result else None
 
         # Signing CA: <algo> <hash>
-        signing_ca = r"Signing CA: (.+) (.+)"
+        signing_ca = r"signing\sCA:\srsa\s(\S+)"
         result = re.search(signing_ca, cert, re.IGNORECASE)
-        cert_data["signing_ca"] = result.group(2) if result else None
+        cert_data["signing_ca"] = result.group(1) if result else None
 
         # Key ID: "<keyid>"
         key_id = r'Key ID: "(.*)"'
@@ -252,6 +241,7 @@ class SSHKeygen:
         principals = r"Principals:[^\n]+\s+([a-z-_]+(?:\n\s+))+"
         result = re.search(principals, cert, re.IGNORECASE)
         cert_data["principals"] = result.group(1).strip() if result else tuple()
+        # cert_data["principals"] = tuple()
 
         cert_data["critical"] = None
 
