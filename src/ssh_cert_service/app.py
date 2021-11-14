@@ -1,11 +1,7 @@
-import os
-import os.path
-
 from flask import Flask, redirect, url_for
 from flask_cors import CORS
 from flask_tern import logging as app_logging
 from flask_tern.utils.config import load_settings
-
 # from flask_tern.utils.json import TernJSONEncoder
 from werkzeug.middleware.proxy_fix import ProxyFix
 

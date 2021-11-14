@@ -1,5 +1,5 @@
 post:
-  summary: Generate ssh-key token
+  summary: Generate ssh-keys
   description: Generates ssh-keys private and public keys.
   responses:
     '200':

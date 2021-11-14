@@ -1,6 +1,6 @@
 post:
-  summary: Verify key signatures
-  description: Verify that public key was used to sing the cert key.
+  summary: Verify public and signature
+  description: This checks that a given public and the certificate belong together, that it's signed by this service's CA and that it's valid (time constraint).
   requestBody:
     content:
       application/json:
