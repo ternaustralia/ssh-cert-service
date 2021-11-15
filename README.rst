@@ -76,4 +76,13 @@ Run flask development server.
     # within container
     flask run -h 0.0.0.0
 
+You will have to export two env variables, but one of it is optional. However, before doing this you will need a master_ssh_key, if you don't have it, you can create one with the following command
+.. code:: bash
+    ssh-keygen -t rsa -C "user_ca" -N "<optiona_passphrese>" -f <path_to_export_keys>/user_ca 
+
+Then, you will need to export the path into an env variable as well as the passphrase if you created it. 
+... code:: bash
+    export MASTER_PRIVATE_KEY_PATH_ENV=<path_to_export_keys> 
+    export MASTER_KEY_PASSPHRASE_ENV=<passphrase> 
+
 The app can then be accessed at http://localhost:5000
