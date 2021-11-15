@@ -104,7 +104,7 @@ def test_verify_signature(ca_key, ca_pass):
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
         # Delete tmp directory
 
-    is_signed = ssh.verify_signature(public_key, cert_key)
+    is_signed = ssh.verify_signature(cert_key)
     assert is_signed
 
 
