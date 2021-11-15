@@ -1,11 +1,13 @@
 from datetime import datetime
 import tempfile
 import os
+import re
 
 from flask import current_app, jsonify, request
 from flask_tern import openapi
 from flask_tern.auth import current_user, require_user
 from ssh_cert_service.utils.ssh_keygen import SSHKeygen
+from ssh_cert_service.utils.common import validity_data
 
 from .blueprint import bp
 
@@ -21,7 +23,7 @@ def get_keys():
     :return: object public_key and private_key
     :rtype: json
     """
-    data = request.json if request.json else dict() 
+    data = request.json if request.json else dict()
 
     principals = current_user[current_app.config["SSH_PRINCIPAL_CLAIM"]]
     ssh = SSHKeygen(current_app.config["USER_CA_KEY"], current_app.config["USER_CA_KEY_PASS"])
@@ -34,8 +36,12 @@ def get_keys():
     comment = identity
     # domain ... should probably be a list of hosts ... who fills that in?
     domain = ""
-    # TODO: validity ... should come from request and min/max should be enforced by server
-    validity = data.get("validity", "-1d:+1d")
+    # Check the validity requested data is correct
+    validity = validity_data(
+        data.get("validity", ""),
+        current_app.config["SSH_MIN_VALIDITY"],
+        current_app.config["SSH_MAX_VALIDITY"]
+    )
 
     private_key, public_key, cert_key = ssh.gen_key(passphrase, identity, domain, validity, principals, comment)
 
@@ -112,7 +118,7 @@ def key_sign():
     identity = f"{ca_name}:{principals}"
     # domain ... should probably be a list of hosts that are allowed to connect to the master node
     domain = ""
-    # validity ... when it start : whent it will expired 
+    # validity ... when it start : whent it will expired
     validity = data.get("validity", "-1d:+1d")
 
     # Create temporary dicrectory and storage the keys there
@@ -129,4 +135,4 @@ def key_sign():
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
 
     return jsonify({"public_key": public_key, "cert_key": cert_key})
-    
+
