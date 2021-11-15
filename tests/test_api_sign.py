@@ -59,6 +59,7 @@ def test_sign_certificate(client, basic_auth, ca_key, ca_pass):
     )
 
     assert response.status_code == 200
+    assert ssh.verify_signature(cert_key)
 
     # cert_data = ssh.get_certificate_data(cert_key)
     # assert basic_auth["user"]["coesra_uname"] in cert_data.get("principals", list())
