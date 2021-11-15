@@ -177,9 +177,6 @@ class SSHKeygen:
 
         cert_data = self.get_certificate_data(public)
         # The cert needs to match the public key and also our CA key
-        print("-----ouput-----")
-        print(cert_data)
-        print("----end-ouput----")
         
         return cert_data.get("signing_ca") == ca_match 
 
