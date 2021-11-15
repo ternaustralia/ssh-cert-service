@@ -38,5 +38,3 @@ def validity_data(validity: str, min: str, max: str) -> str:
 
     # If nothing fails return the request validity
     return validity
-
-

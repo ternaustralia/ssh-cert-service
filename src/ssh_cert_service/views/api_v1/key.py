@@ -119,7 +119,11 @@ def key_sign():
     # domain ... should probably be a list of hosts that are allowed to connect to the master node
     domain = ""
     # validity ... when it start : whent it will expired
-    validity = data.get("validity", "-1d:+1d")
+    validity = validity_data(
+        data.get("validity", ""),
+        current_app.config["SSH_MIN_VALIDITY"],
+        current_app.config["SSH_MAX_VALIDITY"]
+    )
 
     # Create temporary dicrectory and storage the keys there
     with tempfile.TemporaryDirectory() as tmp_dir:
