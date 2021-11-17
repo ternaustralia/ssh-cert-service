@@ -30,7 +30,7 @@ def app(ca_key, ca_pass):
             "USER_CA_KEY_PASS": ca_pass,
             "SSH_PRINCIPAL_CLAIM": "coesra_uname",
             "SSH_MIN_VALIDITY" : "always",
-            "SSH_MAX_VALIDITY" : "1d",
+            "SSH_MAX_VALIDITY" : "+1dhwm",
         }
     )
     yield app

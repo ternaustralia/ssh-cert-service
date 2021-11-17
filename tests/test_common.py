@@ -5,19 +5,20 @@ MIN_VALIDITY = "always"
 
 testdata = [
     # validity, min, max, expected result
-    ("+1d", MIN_VALIDITY, "1d", "always:+1d"),
-    ("+6m", MIN_VALIDITY, "1d", "always:+6m"),
-    ("+6m", MIN_VALIDITY, "66m", "always:+6m"),
+    ("+1d", MIN_VALIDITY, "+1d", "always:+1d"),
+    ("+6m", MIN_VALIDITY, "+7dm", "always:+6m"),
+    ("+6m", MIN_VALIDITY, "+66m", "always:+6m"),
     # FIXME: 1h < 66m .... is 66m even allowed? or should this turn into 1h6m ?
-    ("+1h", MIN_VALIDITY, "66m", "always:+1h"),
+    ("+1h", MIN_VALIDITY, "+66mh", "always:+1h"),
     # FIXME: +1d < 3m .... should not fail
-    ("+1d", MIN_VALIDITY, "3m", "always:+3m"),
+    ("+1d", MIN_VALIDITY, "+3md", "always:+1d"),
     # FIXME: validity and max should use the same format
-    ("+3d", MIN_VALIDITY, "+1m", "always:+3d"),
+    ("+3d", MIN_VALIDITY, "+4md", "always:+3d"),
     # FIXME: API allows passing min validity let's see what happens
     #        which format to use value or max?
-    ("+1d", "2d", "2d", "-2d:+1d"),
-    ("+1d", "-2d", "2d", "-2d:+1d"),
+    ("+1d", "-2d", "+2d", "-2d:+1d"),
+    ("+1d", "-2d", "+2d", "-2d:+1d"),
+    ("+1d", "always", "forever", "always:forever"),
 ]
 
 
