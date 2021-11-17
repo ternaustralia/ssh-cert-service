@@ -8,8 +8,10 @@ testdata = [
     ("+1d", MIN_VALIDITY, "1d", "always:+1d"),
     ("+6m", MIN_VALIDITY, "1d", "always:+6m"),
     ("+6m", MIN_VALIDITY, "66m", "always:+6m"),
+    # FIXME: 1h < 66m .... is 66m even allowed? or should this turn into 1h6m ?
+    ("+1h", MIN_VALIDITY, "66m", "always:+1h"),
     # FIXME: +1d < 3m .... should not fail
-    ("+1d", MIN_VALIDITY, "3m", "always:+1d"),
+    ("+1d", MIN_VALIDITY, "3m", "always:+3m"),
     # FIXME: validity and max should use the same format
     ("+3d", MIN_VALIDITY, "+1m", "always:+3d"),
     # FIXME: API allows passing min validity let's see what happens
