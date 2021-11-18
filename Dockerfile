@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.13
+ARG ALPINE_VERSION=3.14
 
 # BUILD and install code
 FROM alpine:${ALPINE_VERSION} as builder
@@ -54,6 +54,7 @@ RUN addgroup -g 1000 ssh_cert_service \
 
 # Binary pkgs and other pkgs hard or slow to install from source
 RUN apk add --no-cache \
+  openssh-keygen \
   python3 \
   py3-cryptography \
   py3-psycopg2 \
