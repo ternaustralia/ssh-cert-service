@@ -1,21 +1,21 @@
-import pytest
 from datetime import timedelta
+
+import pytest
 
 MIN_VALIDITY = 0
 
-def get_seconds(
-    days: int = 0,
-    seconds: int = 0,
-    minutes: int = 0,
-    hours: int = 0,
-    weeks: int = 0):
-    return int(timedelta(
-        days=days,
-        seconds=seconds,
-        minutes=minutes,
-        hours=hours,
-        weeks=weeks,
-    ).total_seconds())
+
+def get_seconds(days: int = 0, seconds: int = 0, minutes: int = 0, hours: int = 0, weeks: int = 0):
+    return int(
+        timedelta(
+            days=days,
+            seconds=seconds,
+            minutes=minutes,
+            hours=hours,
+            weeks=weeks,
+        ).total_seconds()
+    )
+
 
 testdata = [
     # validity, min, max, expected result
@@ -39,6 +39,8 @@ testdata = [
     (get_seconds(days=4), get_seconds(days=1), get_seconds(days=1), "-86400s:+86400s"),
     # 0, always, forever, always:forever
     (get_seconds(), get_seconds(), get_seconds(), "always:forever"),
+    # 0, 0, 86400, always:+86400s
+    (0, 0, 86400, "always:+86400s"),
 ]
 
 
@@ -50,3 +52,10 @@ def test_validity_data(value, min, max, expected):
 
     assert validity is not None
     assert validity == expected
+
+
+def test_validity_fail():
+    from ssh_cert_service.utils.common import validity_data
+
+    with pytest.raises(Exception):
+        validity_data("forever", 0, 3600)

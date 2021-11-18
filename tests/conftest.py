@@ -1,5 +1,5 @@
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
 
 import pytest
 from flask_tern.testing.fixtures import basic_auth as base_auth  # noqa
@@ -30,8 +30,8 @@ def app(ca_key, ca_pass):
             "USER_CA_KEY": ca_key,
             "USER_CA_KEY_PASS": ca_pass,
             "SSH_PRINCIPAL_CLAIM": "coesra_uname",
-            "SSH_MIN_VALIDITY" : int(timedelta(seconds=0).total_seconds()),
-            "SSH_MAX_VALIDITY" : int(timedelta(days=1).total_seconds()),
+            "SSH_MIN_VALIDITY": int(timedelta(seconds=0).total_seconds()),
+            "SSH_MAX_VALIDITY": int(timedelta(days=1).total_seconds()),
         }
     )
     yield app
@@ -39,8 +39,8 @@ def app(ca_key, ca_pass):
 
 @pytest.fixture
 def basic_auth(base_auth):  # noqa
-    for key, value in base_auth.items():
-        base_auth[key].claims["coesra_uname"] = value["name"]
+    for key, user in base_auth.items():
+        base_auth[key].claims["coesra_uname"] = user.name
     return base_auth
 
 

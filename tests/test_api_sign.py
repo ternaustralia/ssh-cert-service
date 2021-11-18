@@ -9,7 +9,7 @@ def test_verify(client, basic_auth):
     # generate a key pair
     response = client.post(
         "/api/v1.0/key/generate",
-        headers={"Authorization": basic_auth["user"]["auth"]},
+        headers={"Authorization": basic_auth["user"].auth},
     )
 
     response = client.post(
@@ -17,7 +17,7 @@ def test_verify(client, basic_auth):
         json={
             "public_cert_key": response.json["cert_key"],
         },
-        headers={"Authorization": basic_auth["user"]["auth"]},
+        headers={"Authorization": basic_auth["user"].auth},
     )
     assert response.status_code == 200
 
@@ -34,7 +34,7 @@ def test_sign(client, basic_auth, ca_key, ca_pass):
         json={
             "public_key": pub_key,
         },
-        headers={"Authorization": basic_auth["user"]["auth"]},
+        headers={"Authorization": basic_auth["user"].auth},
     )
 
     assert response.status_code == 200
@@ -56,7 +56,7 @@ def test_sign_certificate(client, basic_auth, ca_key, ca_pass):
         json={
             "public_key": pub_key,
         },
-        headers={"Authorization": basic_auth["user"]["auth"]},
+        headers={"Authorization": basic_auth["user"].auth},
     )
 
     assert response.status_code == 200
