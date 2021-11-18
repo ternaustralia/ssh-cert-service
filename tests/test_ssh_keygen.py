@@ -7,8 +7,7 @@ from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 COMMENT = "testing ssh key generation"
 PASSPHRASE = ""
 INDENTITY = "TESTING"
-DOMAIN = "testing.com.au"
-VALIDITY = "-1:+1d"
+VALIDITY = "-1d:+1d"
 PRINCIPALS = "testing_user"
 SSH_NAME = "python_key"
 
@@ -19,7 +18,6 @@ def test_gen_key(ca_key, ca_pass):
     private_key, public_key, cert_key = ssh.gen_key(
         PASSPHRASE,
         INDENTITY,
-        DOMAIN,
         VALIDITY,
         PRINCIPALS,
         COMMENT,
@@ -46,7 +44,7 @@ def test_sign_key(ca_key, ca_pass):
             check=True,
         )
         # Sign key
-        ssh.sign_key(f"{keys_path}.pub", INDENTITY, DOMAIN, VALIDITY, PRINCIPALS)
+        ssh.sign_key(f"{keys_path}.pub", INDENTITY, VALIDITY, PRINCIPALS)
         # Read files into binary variables
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
         # Delete tmp directory
@@ -68,7 +66,7 @@ def test_load_keys(ca_key, ca_pass):
             check=True,
         )
         # Sign key
-        ssh.sign_key(f"{keys_path}.pub", INDENTITY, DOMAIN, VALIDITY, PRINCIPALS)
+        ssh.sign_key(f"{keys_path}.pub", INDENTITY, VALIDITY, PRINCIPALS)
         # Read files into binary variables
         loaded_keys = ssh.load_keys(keys_path)
         # Delete tmp directory
@@ -99,7 +97,7 @@ def test_verify_signature(ca_key, ca_pass):
             check=True,
         )
         # Sign key
-        ssh.sign_key(f"{keys_path}.pub", INDENTITY, DOMAIN, VALIDITY, PRINCIPALS)
+        ssh.sign_key(f"{keys_path}.pub", INDENTITY, VALIDITY, PRINCIPALS)
         # Read files into binary variables
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
         # Delete tmp directory
@@ -124,7 +122,7 @@ def test_get_certificate_data(ca_key, ca_pass):
             check=True,
         )
         # Sign key
-        ssh.sign_key(f"{keys_path}.pub", INDENTITY, DOMAIN, VALIDITY, PRINCIPALS)
+        ssh.sign_key(f"{keys_path}.pub", INDENTITY, VALIDITY, PRINCIPALS)
         # Read files into binary variables
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
         # Delete tmp directory
