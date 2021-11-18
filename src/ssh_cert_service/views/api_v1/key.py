@@ -1,7 +1,6 @@
 from datetime import datetime
 import tempfile
 import os
-import re
 
 from flask import current_app, jsonify, request
 from flask_tern import openapi
