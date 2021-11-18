@@ -11,7 +11,6 @@ from ssh_cert_service.utils.common import validity_data
 from .blueprint import bp
 
 
-
 @bp.route("/key/generate", methods=["POST"])
 @require_user
 @openapi.validate()

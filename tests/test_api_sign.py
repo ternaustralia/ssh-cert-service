@@ -42,6 +42,7 @@ def test_sign(client, basic_auth, ca_key, ca_pass):
     cert_key = response.json["cert_key"]
     assert ssh.verify_signature(cert_key)
 
+
 # FIXME: solve issue with regex to get whole principals
 def test_sign_certificate(client, basic_auth, ca_key, ca_pass):
     # generate a key pair
