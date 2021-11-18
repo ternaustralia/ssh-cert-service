@@ -9,21 +9,21 @@ def validity_data(validity: str, min: str, max: str) -> str:
 
     # System should define acceptable values such as 'minutes, hours, days, weeks'
     #       By default if something fails it will take the first of the list
-    r_compare = r'[\+|\-](\d+)([mhdw]+)'
+    r_compare = r'([\+|\-])(\d+)([mhdw]+)'
 
     # Check that the defined min is correct
     if min != 'always':
         min_r = re.search(r_compare, min, re.IGNORECASE)
         if not min_r:
             raise Exception("The Min configuration is incorrect pleas check value again")
-        min = min_r.group()
+        min = min_r.group(1) + min_r.group(2) + min_r.group(3)[0]
 
     # Check that the defined max is correct
     if max != 'forever':
         max_r = re.search(r_compare, max, re.IGNORECASE)
         if not max_r:
             raise Exception("The Max configuration is incorrect pleas check value again")
-        max = max_r.group()
+        max = max_r.group(1) + max_r.group(2) + max_r.group(3)[0]
     else:
         # If settings max is forever the is not need to check anything else
         return f"{min}:{max}"
@@ -42,8 +42,8 @@ def validity_data(validity: str, min: str, max: str) -> str:
     if not result or len(result.groups()) != 2:
         return default
 
-    sys_value = int(max_r.group(1))
-    sys_len = [char for char in max_r.group(2)]
+    sys_value = int(max_r.group(2))
+    sys_len = [char for char in max_r.group(3)]
 
     max_value = int(result.group(1))
     max_len = result.group(2)

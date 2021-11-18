@@ -19,6 +19,7 @@ testdata = [
     ("+1d", "-2d", "+2d", "-2d:+1d"),
     ("+1d", "-2d", "+2d", "-2d:+1d"),
     ("+1d", "always", "forever", "always:forever"),
+    ("+4d", "-2dmhw", "+2mhdw", "-2d:+2m"),
 ]
 
 
