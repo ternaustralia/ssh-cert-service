@@ -1,21 +1,21 @@
-import pytest
 from datetime import timedelta
+
+import pytest
 
 MIN_VALIDITY = 0
 
-def get_seconds(
-    days: int = 0,
-    seconds: int = 0,
-    minutes: int = 0,
-    hours: int = 0,
-    weeks: int = 0):
-    return int(timedelta(
-        days=days,
-        seconds=seconds,
-        minutes=minutes,
-        hours=hours,
-        weeks=weeks,
-    ).total_seconds())
+
+def get_seconds(days: int = 0, seconds: int = 0, minutes: int = 0, hours: int = 0, weeks: int = 0):
+    return int(
+        timedelta(
+            days=days,
+            seconds=seconds,
+            minutes=minutes,
+            hours=hours,
+            weeks=weeks,
+        ).total_seconds()
+    )
+
 
 testdata = [
     # validity, min, max, expected result
