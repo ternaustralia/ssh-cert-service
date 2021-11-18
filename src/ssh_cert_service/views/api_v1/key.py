@@ -1,12 +1,12 @@
-from datetime import datetime
-import tempfile
 import os
+import tempfile
+from datetime import datetime
 
 from flask import current_app, jsonify, request
 from flask_tern import openapi
 from flask_tern.auth import current_user, require_user
-from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 from ssh_cert_service.utils.common import validity_data
+from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 
 from .blueprint import bp
 
@@ -23,7 +23,7 @@ def get_keys():
     """
     data = request.json if request.json else dict()
 
-    principals = current_user[current_app.config["SSH_PRINCIPAL_CLAIM"]]
+    principals = current_user.claims[current_app.config["SSH_PRINCIPAL_CLAIM"]]
     ssh = SSHKeygen(current_app.config["USER_CA_KEY"], current_app.config["USER_CA_KEY_PASS"])
     ca_name = current_app.config["USER_CA_NAME"]
     # TODO: what about passphrase? (get from requests or generate a random and return it?)
@@ -34,9 +34,7 @@ def get_keys():
     comment = identity
     # Check the validity requested data is correct
     validity = validity_data(
-        int(data.get("validity", 0)),
-        current_app.config["SSH_MIN_VALIDITY"],
-        current_app.config["SSH_MAX_VALIDITY"]
+        int(data.get("validity", 0)), current_app.config["SSH_MIN_VALIDITY"], current_app.config["SSH_MAX_VALIDITY"]
     )
 
     private_key, public_key, cert_key = ssh.gen_key(passphrase, identity, validity, principals, comment)
@@ -81,7 +79,8 @@ def verify_keys():
         is_valid
         and
         # TODO: gw: I don't think this is working as expected ... the regexp in ssh_keygen.py for principals does not generate tuples
-        current_user[current_app.config["SSH_PRINCIPAL_CLAIM"]] not in [x.strip() for x in cert_data.get("principals")]
+        current_user.claims[current_app.config["SSH_PRINCIPAL_CLAIM"]]
+        not in [x.strip() for x in cert_data.get("principals")]
     ):
         return jsonify(
             {
@@ -107,16 +106,14 @@ def key_sign():
     data = request.json
     public_key = data["public_key"]
 
-    principals = current_user[current_app.config["SSH_PRINCIPAL_CLAIM"]]
+    principals = current_user.claims[current_app.config["SSH_PRINCIPAL_CLAIM"]]
     ssh = SSHKeygen(current_app.config["USER_CA_KEY"], current_app.config["USER_CA_KEY_PASS"])
     ca_name = current_app.config["USER_CA_NAME"]
     # key identity ... use CA name and user principal as identity
     identity = f"{ca_name}:{principals}"
     # validity ... when it start : whent it will expired
     validity = validity_data(
-        int(data.get("validity", 0)),
-        current_app.config["SSH_MIN_VALIDITY"],
-        current_app.config["SSH_MAX_VALIDITY"]
+        int(data.get("validity", 0)), current_app.config["SSH_MIN_VALIDITY"], current_app.config["SSH_MAX_VALIDITY"]
     )
 
     # Create temporary dicrectory and storage the keys there
@@ -133,4 +130,3 @@ def key_sign():
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
 
     return jsonify({"public_key": public_key, "cert_key": cert_key})
-

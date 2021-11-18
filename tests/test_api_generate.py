@@ -11,7 +11,7 @@ def test_key_gen(client, basic_auth):
         json={
             "validity": 3600,
         },
-        headers={"Authorization": basic_auth["user"]["auth"]},
+        headers={"Authorization": basic_auth["user"].auth},
     )
     assert response.status_code == 200
     assert response.json.keys() == {"private_key", "public_key", "cert_key"}

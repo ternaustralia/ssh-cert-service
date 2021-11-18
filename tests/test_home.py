@@ -24,7 +24,7 @@ def test_whoami_fail(client):
 def test_whoami_ok(client, basic_auth):
     response = client.get(
         "/api/whoami",
-        headers={"Authorization": basic_auth["user"]["auth"]},
+        headers={"Authorization": basic_auth["user"].auth},
     )
     assert response.status_code == 200
     assert response.json == asdict(basic_auth["user"])
