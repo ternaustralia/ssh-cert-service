@@ -1,32 +1,22 @@
-import re
-
-def validity_data(validity: str, min: str, max: str) -> str:
+def validity_data(validity_request: int, validity_start: int, validity_end: int) -> str:
     """
-    Check the validity data and return the correct values
+    Check the validity time that the certificate will exprire
 
     :return: str with the correct validity strcuture
     """
-    default = f"{min}:+{max}"
-    if not validity:
-        return default
 
-    # Match regex for the validity structure -1d:+1d
-    regex = r'\+(\d+)([dwm])'
-    result = re.search(regex, validity, re.IGNORECASE)
+    if not isinstance(validity_request, int):
+        raise Exception("The validity request is not correct please check your inputs")
 
-    # If the regex does not match the two (int & str) values return default
-    if not result or len(result.groups()) != 2:
-        return default
+    output_to = f"+{validity_end}s"
+    output_from = "always"
 
-    r_compare = r'(\d+)([dwm])'
-    compare = re.search(r_compare, max, re.IGNORECASE)
+    if not validity_end or validity_request <= validity_end:
+        # If the settings are empty it means forever
+        output_to = f"+{validity_request}s" if validity_request else "forever"
 
-    max_value = int(result.group(1))
-    max_len = result.group(2)
+    # Instace the current time plus the validity_start
+    if validity_start:
+        output_from = f"-{validity_start}s"
 
-    # Compare the coming data with the defined max validity in the system
-    if max_value > int(compare.group(1)) or max_len != compare.group(2):
-        return default
-
-    # If nothing fails return the request validity
-    return f"{min}:{validity}"
+    return f"{output_from}:{output_to}"

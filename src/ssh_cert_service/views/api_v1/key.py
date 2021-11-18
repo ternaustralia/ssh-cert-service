@@ -1,7 +1,6 @@
 from datetime import datetime
 import tempfile
 import os
-import re
 
 from flask import current_app, jsonify, request
 from flask_tern import openapi
@@ -10,7 +9,6 @@ from ssh_cert_service.utils.ssh_keygen import SSHKeygen
 from ssh_cert_service.utils.common import validity_data
 
 from .blueprint import bp
-
 
 
 @bp.route("/key/generate", methods=["POST"])
@@ -38,7 +36,7 @@ def get_keys():
     domain = ""
     # Check the validity requested data is correct
     validity = validity_data(
-        data.get("validity", ""),
+        int(data.get("validity", 0)),
         current_app.config["SSH_MIN_VALIDITY"],
         current_app.config["SSH_MAX_VALIDITY"]
     )
@@ -120,7 +118,7 @@ def key_sign():
     domain = ""
     # validity ... when it start : whent it will expired
     validity = validity_data(
-        data.get("validity", ""),
+        int(data.get("validity", 0)),
         current_app.config["SSH_MIN_VALIDITY"],
         current_app.config["SSH_MAX_VALIDITY"]
     )

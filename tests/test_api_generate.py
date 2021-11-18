@@ -8,6 +8,9 @@ def test_key_no_auth(client):
 def test_key_gen(client, basic_auth):
     response = client.post(
         "/api/v1.0/key/generate",
+        json={
+            "validity": 3600,
+        },
         headers={"Authorization": basic_auth["user"]["auth"]},
     )
     assert response.status_code == 200

@@ -1,23 +1,44 @@
 import pytest
+from datetime import timedelta
 
-VALIDITY = "+1d"
-MIN_VALIDITY = "always"
+MIN_VALIDITY = 0
+
+def get_seconds(
+    days: int = 0,
+    seconds: int = 0,
+    minutes: int = 0,
+    hours: int = 0,
+    weeks: int = 0):
+    return int(timedelta(
+        days=days,
+        seconds=seconds,
+        minutes=minutes,
+        hours=hours,
+        weeks=weeks,
+    ).total_seconds())
 
 testdata = [
     # validity, min, max, expected result
-    ("+1d", MIN_VALIDITY, "1d", "always:+1d"),
-    ("+6m", MIN_VALIDITY, "1d", "always:+6m"),
-    ("+6m", MIN_VALIDITY, "66m", "always:+6m"),
-    # FIXME: 1h < 66m .... is 66m even allowed? or should this turn into 1h6m ?
-    ("+1h", MIN_VALIDITY, "66m", "always:+1h"),
-    # FIXME: +1d < 3m .... should not fail
-    ("+1d", MIN_VALIDITY, "3m", "always:+3m"),
-    # FIXME: validity and max should use the same format
-    ("+3d", MIN_VALIDITY, "+1m", "always:+3d"),
-    # FIXME: API allows passing min validity let's see what happens
-    #        which format to use value or max?
-    ("+1d", "2d", "2d", "-2d:+1d"),
-    ("+1d", "-2d", "2d", "-2d:+1d"),
+    # +1d, always, +1d+2h, always:+93600s
+    (get_seconds(days=1), MIN_VALIDITY, get_seconds(days=1, hours=2), "always:+86400s"),
+    # +6m, always, +7m, always:+360s
+    (get_seconds(minutes=6), MIN_VALIDITY, get_seconds(minutes=7), "always:+360s"),
+    # +5m, always, +5m, always:+300s
+    (get_seconds(minutes=5), MIN_VALIDITY, get_seconds(minutes=5), "always:+300s"),
+    # +1h, always, +66m, always:+3600s
+    (get_seconds(hours=1), MIN_VALIDITY, get_seconds(minutes=66), "always:+3600s"),
+    # +1d, always, +3m, always:+180s
+    (get_seconds(days=1), MIN_VALIDITY, get_seconds(minutes=3), "always:+180s"),
+    # +3d, always, +3m, always:+180s
+    (get_seconds(days=3), MIN_VALIDITY, get_seconds(minutes=3), "always:+180s"),
+    # +1d, -2d, +2d, -172800s:+86400s
+    (get_seconds(days=1), get_seconds(days=2), get_seconds(days=2), "-172800s:+86400s"),
+    # +1d, always, forever, always:+86400s
+    (get_seconds(days=1), get_seconds(), get_seconds(), "always:+86400s"),
+    # +4d, -1d, +1d, -86400s:+86400s
+    (get_seconds(days=4), get_seconds(days=1), get_seconds(days=1), "-86400s:+86400s"),
+    # 0, always, forever, always:forever
+    (get_seconds(), get_seconds(), get_seconds(), "always:forever"),
 ]
 
 
