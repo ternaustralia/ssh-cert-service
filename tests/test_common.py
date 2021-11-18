@@ -34,10 +34,12 @@ testdata = [
     (get_seconds(days=3), MIN_VALIDITY, get_seconds(minutes=3), "always:+180s"),
     # +1d, -2d, +2d, -172800s:+86400s
     (get_seconds(days=1), get_seconds(days=2), get_seconds(days=2), "-172800s:+86400s"),
-    # +1d, always, forever, always:forever
-    (get_seconds(days=1), get_seconds(), get_seconds(), "always:forever"),
+    # +1d, always, forever, always:+86400s
+    (get_seconds(days=1), get_seconds(), get_seconds(), "always:+86400s"),
     # +4d, -1d, +1d, -86400s:+86400s
     (get_seconds(days=4), get_seconds(days=1), get_seconds(days=1), "-86400s:+86400s"),
+    # 0, always, forever, always:forever
+    (get_seconds(), get_seconds(), get_seconds(), "always:forever"),
 ]
 
 

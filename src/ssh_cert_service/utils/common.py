@@ -12,21 +12,12 @@ def validity_data(validity_request: int, validity_start: int, validity_end: int)
     if not isinstance(validity_request, int):
         raise Exception("The validity request is not correct please check your inputs")
 
-    current_time = datetime.today()
-
-    # Work with timedelta and add the validity_request in seconds
-    validity_request = timedelta(seconds=validity_request)
-
-    if validity_request.total_seconds() <= validity_end:
-        # Get the total of seconds between the difference of the current time and future time
-        seconds = int(((current_time + validity_request) - current_time).total_seconds())
-        output_to = f"+{seconds}s"
+    if not validity_end or validity_request <= validity_end:
+        # If the settings are empty it means forever
+        output_to = f"+{validity_request}s" if validity_request else "forever"
     # If the validity request fails then work with the settings values
-    elif validity_end:
-        output_to = f"+{validity_end}s"
-    # If the settings are empty it means forever
     else:
-        output_to = "forever"
+        output_to = f"+{validity_end}s"
 
     # Instace the current time plus the validity_start
     if validity_start:
