@@ -140,9 +140,10 @@ class SSHKeygen:
             cmd.append("-I")
             cmd.append("")
 
-        if domain:
-            cmd.append("-Z")
-            cmd.append(domain)
+        #FIXME: Please check which version of open-ssh will run in the server because it is conflicting
+        # if domain:
+        #     cmd.append("-Z")
+        #     cmd.append(domain)
         if validity:
             cmd.append("-V")
             cmd.append(validity)
@@ -177,8 +178,8 @@ class SSHKeygen:
 
         cert_data = self.get_certificate_data(public)
         # The cert needs to match the public key and also our CA key
-        
-        return cert_data.get("signing_ca") == ca_match 
+
+        return cert_data.get("signing_ca") == ca_match
 
     def get_certificate_data(self, cert_key: str) -> Dict[str, Any]:
         cert = ""

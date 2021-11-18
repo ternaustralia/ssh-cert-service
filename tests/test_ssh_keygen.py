@@ -8,7 +8,7 @@ COMMENT = "testing ssh key generation"
 PASSPHRASE = ""
 INDENTITY = "TESTING"
 DOMAIN = "testing.com.au"
-VALIDITY = "-1:+1d"
+VALIDITY = "-1d:+1d"
 PRINCIPALS = "testing_user"
 SSH_NAME = "python_key"
 
