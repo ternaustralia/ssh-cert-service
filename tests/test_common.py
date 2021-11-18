@@ -1,7 +1,6 @@
 import pytest
 from datetime import timedelta
 
-VALIDITY = "+1d"
 MIN_VALIDITY = 0
 
 def get_seconds(
