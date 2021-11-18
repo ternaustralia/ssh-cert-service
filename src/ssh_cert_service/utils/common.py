@@ -1,6 +1,3 @@
-import re
-from datetime import timedelta, datetime
-
 
 def validity_data(validity_request: int, validity_start: int, validity_end: int) -> str:
     """
