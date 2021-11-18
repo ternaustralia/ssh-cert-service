@@ -39,6 +39,8 @@ testdata = [
     (get_seconds(days=4), get_seconds(days=1), get_seconds(days=1), "-86400s:+86400s"),
     # 0, always, forever, always:forever
     (get_seconds(), get_seconds(), get_seconds(), "always:forever"),
+    # 0, 0, 86400, always:+86400s
+    (0, 0, 86400, "always:+86400s"),
 ]
 
 
