@@ -50,3 +50,10 @@ def test_validity_data(value, min, max, expected):
 
     assert validity is not None
     assert validity == expected
+
+
+def test_validity_fail():
+    from ssh_cert_service.utils.common import validity_data
+
+    with pytest.raises(Exception):
+        validity_data("forever", 0, 3600)
