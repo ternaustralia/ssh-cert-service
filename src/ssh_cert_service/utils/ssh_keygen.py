@@ -27,7 +27,6 @@ class SSHKeygen:
         self,
         passphrase: str = "",
         identity: str = "",
-        domain: str = "",
         validity: str = "",
         principals: str = "",
         comment: str = "",
@@ -39,8 +38,6 @@ class SSHKeygen:
             password that will be used to encrypt private key
         indentity : string
             String that helps to identify the signed key
-        domain : string
-            Key will be restricted to be used for this host only
         validity : string
             Expiration time for the signed key format -1d:+3w (before, after)
         principals : string
@@ -68,7 +65,7 @@ class SSHKeygen:
             )
 
             # Sign key
-            self.sign_key(f"{keys_path}.pub", identity, domain, validity, principals)
+            self.sign_key(f"{keys_path}.pub", identity, validity, principals)
             # Read files into binary variables
             loaded_keys = self.load_keys(keys_path)
             # Delete tmp directory
@@ -104,7 +101,6 @@ class SSHKeygen:
         self,
         public_path: str,
         identity: str = "",
-        domain: str = "",
         validity: str = "-1d:+1d",
         principals: str = "",
     ):
@@ -115,8 +111,6 @@ class SSHKeygen:
             Path to public key which needs to be signed
         indentity : string
             String the helps to identify the signed key (this appears in sshd logs)
-        domain : string
-            Host names this signed key will be allowed to log in to
         validity : string
             Expiration time for the signed key format -1d:+3w (before:after)
         principals : string
@@ -140,10 +134,6 @@ class SSHKeygen:
             cmd.append("-I")
             cmd.append("")
 
-        #FIXME: Please check which version of open-ssh will run in the server because it is conflicting
-        # if domain:
-        #     cmd.append("-Z")
-        #     cmd.append(domain)
         if validity:
             cmd.append("-V")
             cmd.append(validity)

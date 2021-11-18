@@ -32,8 +32,6 @@ def get_keys():
     identity = f"{ca_name}:{principals}"
     # comment ... something user readable ... identity works for us as well
     comment = identity
-    # domain ... should probably be a list of hosts ... who fills that in?
-    domain = ""
     # Check the validity requested data is correct
     validity = validity_data(
         int(data.get("validity", 0)),
@@ -41,7 +39,7 @@ def get_keys():
         current_app.config["SSH_MAX_VALIDITY"]
     )
 
-    private_key, public_key, cert_key = ssh.gen_key(passphrase, identity, domain, validity, principals, comment)
+    private_key, public_key, cert_key = ssh.gen_key(passphrase, identity, validity, principals, comment)
 
     return jsonify({"public_key": public_key, "private_key": private_key, "cert_key": cert_key})
 
@@ -114,8 +112,6 @@ def key_sign():
     ca_name = current_app.config["USER_CA_NAME"]
     # key identity ... use CA name and user principal as identity
     identity = f"{ca_name}:{principals}"
-    # domain ... should probably be a list of hosts that are allowed to connect to the master node
-    domain = ""
     # validity ... when it start : whent it will expired
     validity = validity_data(
         int(data.get("validity", 0)),
@@ -133,7 +129,7 @@ def key_sign():
         tmp_public.close()
 
         # Sign key
-        ssh.sign_key(public_path, identity, domain, validity, principals)
+        ssh.sign_key(public_path, identity, validity, principals)
         private_key, public_key, cert_key = ssh.load_keys(keys_path)
 
     return jsonify({"public_key": public_key, "cert_key": cert_key})
