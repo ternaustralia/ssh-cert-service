@@ -18,51 +18,26 @@ def get_seconds(
         weeks=weeks,
     ).total_seconds())
 
-
-validity_settings = [
-    get_seconds(days=1, hours=2), #0
-    get_seconds(minutes=7),       #1
-    get_seconds(minutes=5),       #2
-    get_seconds(minutes=66),      #3
-    get_seconds(minutes=3),       #4
-    get_seconds(minutes=3),       #5
-    get_seconds(days=2),          #6
-    get_seconds(days=1),          #7
-]
-
-input_validity = [
-    get_seconds(days=1),    #0
-    get_seconds(minutes=6), #1
-    get_seconds(minutes=5), #2
-    get_seconds(hours=1),   #3
-    get_seconds(days=1),    #4
-    get_seconds(days=3),    #5
-    get_seconds(days=1),    #6
-    get_seconds(days=1),    #7
-    get_seconds(days=4),    #8
-]
-
-
 testdata = [
     # validity, min, max, expected result
-    # +1d, always, +1d+2h, always:+1440m
-    (input_validity[0], MIN_VALIDITY, validity_settings[0], "always:+1440m"),
-    # +6m, always, +7m, always:+6m
-    (input_validity[1], MIN_VALIDITY, validity_settings[1], "always:+6m"),
-    # +5m, always, +5m, always:+5m
-    (input_validity[2], MIN_VALIDITY, validity_settings[2], "always:+5m"),
-    # +1h, always, +66m, always:+60m
-    (input_validity[3], MIN_VALIDITY, validity_settings[3], "always:+60m"),
-    # +1d, always, +3m, always:+3m
-    (input_validity[4], MIN_VALIDITY, validity_settings[4], "always:+3m"),
-    # +3d, always, +3m, always:+3m
-    (input_validity[5], MIN_VALIDITY, validity_settings[5], "always:+3m"),
-    # +1d, -2d, +2d, -2880m:+1440m
-    (input_validity[6], validity_settings[6], validity_settings[6], "-2880m:+1440m"),
+    # +1d, always, +1d+2h, always:+93600s
+    (get_seconds(days=1), MIN_VALIDITY, get_seconds(days=1, hours=2), "always:+86400s"),
+    # +6m, always, +7m, always:+360s
+    (get_seconds(minutes=6), MIN_VALIDITY, get_seconds(minutes=7), "always:+360s"),
+    # +5m, always, +5m, always:+300s
+    (get_seconds(minutes=5), MIN_VALIDITY, get_seconds(minutes=5), "always:+300s"),
+    # +1h, always, +66m, always:+3600s
+    (get_seconds(hours=1), MIN_VALIDITY, get_seconds(minutes=66), "always:+3600s"),
+    # +1d, always, +3m, always:+180s
+    (get_seconds(days=1), MIN_VALIDITY, get_seconds(minutes=3), "always:+180s"),
+    # +3d, always, +3m, always:+180s
+    (get_seconds(days=3), MIN_VALIDITY, get_seconds(minutes=3), "always:+180s"),
+    # +1d, -2d, +2d, -172800s:+86400s
+    (get_seconds(days=1), get_seconds(days=2), get_seconds(days=2), "-172800s:+86400s"),
     # +1d, always, forever, always:forever
-    (input_validity[7], get_seconds(), get_seconds(), "always:forever"),
-    # +4d, -1d, +1d, -1440m:+1440m
-    (input_validity[8], validity_settings[7], validity_settings[7], "-1440m:+1440m"),
+    (get_seconds(days=1), get_seconds(), get_seconds(), "always:forever"),
+    # +4d, -1d, +1d, -86400s:+86400s
+    (get_seconds(days=4), get_seconds(days=1), get_seconds(days=1), "-86400s:+86400s"),
 ]
 
 
