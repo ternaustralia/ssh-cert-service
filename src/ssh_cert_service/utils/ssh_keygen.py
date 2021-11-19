@@ -168,7 +168,7 @@ class SSHKeygen:
 
         cert_data = self.get_certificate_data(public)
         # The cert needs to match the public key and also our CA key
-
+        # TODO: we should probably check validity time here as well
         return cert_data.get("signing_ca") == ca_match
 
     def get_certificate_data(self, cert_key: str) -> Dict[str, Any]:
@@ -218,9 +218,24 @@ class SSHKeygen:
         cert_data["serial"] = result.group(1) if result else None
 
         # Valid: from <iso8601> to <iso8601>
-        valid = r"Valid: (from [0-9T:-]+ to [0-9T:-]+)"
+        # Valid: before <iso8601>
+        # Valid: after <iso8601>
+        # Valid: forever
+        # create {"from" ... , "to": ..} if a value is None that key is valid
+        # TODO: need tests to check validity based on date as well
+        valid = r"Valid: (?:from (?P<from>[0-9T:-]+) to (?P<to>[0-9T:-]+)|before (?P<before>[0-9T:-]+)|(?P<forever>forever)|after (?P<after>[0-9T:-]+))"
         result = re.search(valid, cert, re.IGNORECASE)
-        cert_data["valid"] = result.group(1) if result else None
+        if result:
+            valid = result.groupdict()
+            cert_data["valid"] = {
+                "from": valid.get("from") or valid.get("after"),
+                "to": valid.get("to") or valid.get("before"),
+            }
+            # TODO: should we parse from/to to datetime here ? (if not None)
+            # if it's forever then previous extraction should have set both to None
+        else:
+            # TODO: fallback ... we don't know time span ... should we fail ?
+            cert_data["valid"] = {"from": None, "to": None}
 
         # Principals:
         #         <principal 1>

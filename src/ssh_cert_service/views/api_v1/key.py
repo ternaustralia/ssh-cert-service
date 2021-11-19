@@ -67,12 +67,9 @@ def verify_keys():
 
     # Check if the certificated has expired yet.
     validity = cert_data.get("valid")
-    if validity:
-        # TODO: get_certificate_data might parse that ['valid'] into a list (from, to)
-        #       maybe already as datetime objects
-        str_expired = validity[validity.rfind(" ") + 1 :]
+    if validity["to"]:
         # TODO: what is the timezone to compare dates? always local?
-        date_expired = datetime.strptime(str_expired, "%Y-%m-%dT%H:%M:%S")
+        date_expired = datetime.strptime(validity["to"], "%Y-%m-%dT%H:%M:%S")
         is_valid = datetime.now() <= date_expired
 
     if not (
