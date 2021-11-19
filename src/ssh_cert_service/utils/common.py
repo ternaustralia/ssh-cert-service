@@ -8,12 +8,19 @@ def validity_data(validity_request: int, validity_start: int, validity_end: int)
     if not isinstance(validity_request, int):
         raise Exception("The validity request is not correct please check your inputs")
 
-    output_to = f"+{validity_end}s"
-    output_from = "always"
+    if validity_start < 0 or validity_end < 0:
+        raise Exception("The validity_start or validity_end cannot be negative values.")
 
-    if not validity_end or validity_request <= validity_end:
-        # If the settings are empty it means forever
-        output_to = f"+{validity_request}s" if validity_request else "forever"
+    output_from = "always"
+    #!a ^ !b => forever
+    if not validity_request and not validity_end:
+        output_to = "forever"
+    #a ^ !b => a or #a < b => a
+    elif (not validity_end and validity_request) or (validity_request and validity_request <= validity_end) :
+        output_to = f"+{validity_request}s"
+    #!a or a > b => b
+    else:
+        output_to = f"+{validity_end}s"
 
     # Instace the current time plus the validity_start
     if validity_start:
