@@ -34,7 +34,7 @@ def get_keys():
     comment = identity
     # Check the validity requested data is correct
     validity = validity_data(
-        int(data.get("validity", 0)), current_app.config["SSH_MIN_VALIDITY"], current_app.config["SSH_MAX_VALIDITY"]
+        int(data.get("validity", 0)), int(current_app.config["SSH_MIN_VALIDITY"]), int(current_app.config["SSH_MAX_VALIDITY"])
     )
 
     private_key, public_key, cert_key = ssh.gen_key(passphrase, identity, validity, principals, comment)
