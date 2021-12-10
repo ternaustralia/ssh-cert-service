@@ -110,7 +110,7 @@ def key_sign():
     identity = f"{ca_name}:{principals}"
     # validity ... when it start : whent it will expired
     validity = validity_data(
-        int(data.get("validity", 0)), current_app.config["SSH_MIN_VALIDITY"], current_app.config["SSH_MAX_VALIDITY"]
+        int(data.get("validity", 0)), int(current_app.config["SSH_MIN_VALIDITY"]), int(current_app.config["SSH_MAX_VALIDITY"])
     )
 
     # Create temporary dicrectory and storage the keys there
